@@ -8,5 +8,5 @@ media
 fixitenv/
 .vscode/
 .vscode/* 
-
+static_files/
 .history

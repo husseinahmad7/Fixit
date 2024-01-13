@@ -32,7 +32,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
 # False if not in os.environ because of casting above
-DEBUG = env('DEBUG')
+DEBUG = env('DEBUG') == 'True'
 
 ALLOWED_HOSTS = env('ALLOWED_HOSTS').split(' ')
 AUTH_USER_MODEL = 'Users.User'
@@ -86,9 +86,27 @@ WSGI_APPLICATION = 'Fixit.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-DB_NAME = "Fixit"
-DB_USER = "postgres"
-DB_PASSWORD = "ST.Outis.79.C"
+# DB_NAME = "Fixit"
+# DB_USER = "postgres"
+# DB_PASSWORD = "ST.Outis.79.C"
+# DATABASES = {
+#     # 'default': {
+#     #     'ENGINE': 'django.db.backends.sqlite3',
+#     #     'NAME': BASE_DIR / 'db.sqlite3',
+#     # },
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': DB_NAME,
+#         'USER': DB_USER,
+#         'PASSWORD': DB_PASSWORD,
+#         'HOST': 'localhost',
+#         'PORT': '5432'
+#     },
+# }
+
+DB_NAME = "fixit"
+DB_USER = "fixit_user"
+DB_PASSWORD = "I9MgJ0ZjBjNWeCGmWNCcy1c0jIHGF6za"
 DATABASES = {
     # 'default': {
     #     'ENGINE': 'django.db.backends.sqlite3',
@@ -99,18 +117,13 @@ DATABASES = {
         'NAME': DB_NAME,
         'USER': DB_USER,
         'PASSWORD': DB_PASSWORD,
-        'HOST': 'localhost',
+        'HOST': 'dpg-cmh591f109ks739b8rl0-a.oregon-postgres.render.com',
         'PORT': '5432'
     },
 }
-
+# DATABASES= {}
 DB_URL = env('DB_URL')
-DATABASES['default'] = dj_database_url.parse(
-    DB_URL,
-    # conn_max_age=600,
-    # conn_health_checks=True,
-)
-# 
+DATABASES['default'] = dj_database_url.parse(DB_URL)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
