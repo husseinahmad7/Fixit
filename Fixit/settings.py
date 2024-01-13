@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 import environ
 from pathlib import Path
-
+import dj_database_url
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'Users',
     # 'rest_auth'
+    'Ticket'
 ]
 
 MIDDLEWARE = [
@@ -103,6 +104,13 @@ DATABASES = {
     },
 }
 
+DB_URL = env('DB_URL')
+DATABASES['default'] = dj_database_url.parse(
+    DB_URL,
+    # conn_max_age=600,
+    # conn_health_checks=True,
+)
+# 
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
