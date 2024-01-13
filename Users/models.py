@@ -5,9 +5,10 @@ from django.urls import reverse
 
 class User(AbstractUser):
     mobile = models.CharField("mobile",max_length=20,blank=True,null=True)
+    email = models.EmailField("email address", unique=True)
+    
     def get_absolute_url(self):
         return reverse("user-info", kwargs={"pk": self.pk})
-    
 
 class Skill(models.Model):
     name = models.CharField(max_length=100, unique=True)

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UsersListCreateView,StaffsRetrieveDeleteUpdateView,StaffListApiView,AddSkillForStaffView,DeleteSkillForStaffView,UserRegistrationAPIView,ActivateUserAPIView,UserRetrieveUpdateAPIView, UsersRetrieveDeleteUpdateView,LogoutView,StaffRegistrationView,PasswordChangeView,PasswordResetConfirmView,PasswordResetView
+from .views import LoginView,UsersListCreateView,StaffsRetrieveDeleteUpdateView,StaffListApiView,AddSkillForStaffView,DeleteSkillForStaffView,UserRegistrationAPIView,ActivateUserAPIView,UserRetrieveUpdateAPIView, UsersRetrieveDeleteUpdateView,LogoutView,StaffRegistrationView,PasswordChangeView,PasswordResetConfirmView,PasswordResetView
 from rest_framework.authtoken.views import obtain_auth_token
 
 
@@ -11,7 +11,8 @@ urlpatterns = [
     path('user/<int:pk>/', UserRetrieveUpdateAPIView.as_view(),name='user-info'),
     
     #Login ,obtain the token using username and password
-    path('login/', obtain_auth_token, name='login'),
+    path('token/', obtain_auth_token, name='token'),
+    path('login/', LoginView.as_view(), name='login'),
     # staff stuff
     path('st/', UsersListCreateView.as_view(),name='api'),
     path('st/register/staff', StaffRegistrationView.as_view(),name='register-staff'),
