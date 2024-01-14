@@ -87,25 +87,25 @@ WSGI_APPLICATION = 'Fixit.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-if DEBUG == True:
+# if DEBUG == True:
 
-    DB_NAME = "Fixit"
-    DB_USER = "postgres"
-    DB_PASSWORD = "ST.Outis.79.C"
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': DB_NAME,
-            'USER': DB_USER,
-            'PASSWORD': DB_PASSWORD,
-            'HOST': 'localhost',
-            'PORT': '5432'
-        },
-    }
-else:
-    DATABASES = {
-    'default':dj_database_url.parse(env('DB_URL'),ssl_require=True)
-    }
+#     DB_NAME = "Fixit"
+#     DB_USER = "postgres"
+#     DB_PASSWORD = "ST.Outis.79.C"
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': DB_NAME,
+#             'USER': DB_USER,
+#             'PASSWORD': DB_PASSWORD,
+#             'HOST': 'localhost',
+#             'PORT': '5432'
+#         },
+#     }
+# else:
+DATABASES = {
+'default':dj_database_url.parse(env('DB_URL'),ssl_require=True)
+}
 # DB_NAME = "fixit"
 # DB_USER = "fixit_user"
 # DB_PASSWORD = "I9MgJ0ZjBjNWeCGmWNCcy1c0jIHGF6za"
