@@ -1,12 +1,12 @@
 from django.contrib import admin
 
 # Register your models here.
-from django.contrib.auth.admin import UserAdmin
-from .models import User,Staff,Skill
+# from django.contrib.auth.admin import UserAdmin
+from .models import User,Staff
 
-admin.site.register(User, UserAdmin)
+admin.site.register(User)
 admin.site.register(Staff)
-admin.site.register(Skill)
+
 # Define an inline admin descriptor for Employee model
 # which acts a bit like a singleton
 # class StaffInline(admin.StackedInline):

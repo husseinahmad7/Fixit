@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.urls import reverse
-# from django.contrib.auth.models import User
+from Ticket.models import Service
 
 class User(AbstractUser):
     mobile = models.CharField("mobile",max_length=20,blank=True,null=True)
@@ -9,27 +9,30 @@ class User(AbstractUser):
     
     def get_absolute_url(self):
         return reverse("user-info", kwargs={"pk": self.pk})
+    
 
-class Skill(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    def __str__(self):
-        return f"{self.name}"
+# class Skill(models.Model):
+#     name = models.CharField(max_length=100, unique=True)
+#     def __str__(self):
+#         return f"{self.name}"
 
 # class Client(models.Model):
 #     user = models.OneToOneField('User', on_delete=models.CASCADE)
 #     address = models.CharField(max_length=200)
 
 class Staff(models.Model):
+    
     user = models.OneToOneField('User', on_delete=models.CASCADE)
     department = models.CharField(max_length=100)
     salary = models.DecimalField(max_digits=10, decimal_places=2,default=0.)
     availability = models.BooleanField(default= True)
-    skills = models.ManyToManyField(Skill, blank=True)
+    services = models.ManyToManyField('Ticket.Service', blank=True)
     is_supervisor = models.BooleanField(default= False)
 
     def get_absolute_url(self):
         return reverse("staff-retrieve", kwargs={"pk": self.pk})
-    
+    def __str__(self):
+        return f"{self.user.username}"
 # class UserManager(BaseUserManager):
 #     def create_user(self, username, email, password=None, **extra_fields):
 #         if not email:

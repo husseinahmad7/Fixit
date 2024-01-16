@@ -28,9 +28,10 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
 User = get_user_model()
-from .models import Staff, Skill
+from .models import Staff
 from django.core.cache import cache
 import random
+from Ticket.models import Service
 
 def generate_6_digit_code():
     return random.randint(100000, 999999)
@@ -59,16 +60,32 @@ class StaffListApiView(generics.ListAPIView):
     serializer_class = StaffSerializer
     queryset = Staff.objects.all()
 
-
 class StaffsRetrieveDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated, IsSuperUser]
 
     serializer_class = StaffSerializer
     queryset = Staff.objects.all()
+    # def perform_update(self, serializer):
+    #     services_data = self.request.data.get('services')
+    #     staff = Staff.objects.get(pk=self.request.kwargs['pk'])
+    #     if services_data is not None:
+    #         # staff.services.clear()
+    #         # for service_data in services_data:
+    #         #     service = Service.objects.get(pk=service_data['id'])
+    #         #     staff.services.add(service)
+    #         # staff.save()
 
-class AddSkillForStaffView(APIView):
-    permission_classes = [IsAuthenticated, IsSuperUser]
+            
+    #         staff = Staff.objects.update(department=self.request.data.get('department'),salary=self.request.data.get('salary'),availability=self.request.data.get('availability'),is_supervisor=self.request.data.get('is_supervisor'))
+    #         services = self.request.data.get('services').split(',')
+    #         list = []
+    #         for serv in services:
+    #             service = Service.objects.get(pk=serv)
+    #             list.append(service)
+    #         staff.services.set(list)
+class AddServiceForStaffView(APIView):
+    permission_classes = [IsSuperUser]
 
     def post(self, request, pk):
         try:
@@ -76,32 +93,36 @@ class AddSkillForStaffView(APIView):
         except Staff.DoesNotExist:
             return Response({'message': 'Staff not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-        skill_name = request.data.get('name')
-        if not skill_name:
-            return Response({'message': 'Skill name is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        service_id = request.data.get('service_id')
+        if not service_id:
+            return Response({'message': 'Service id is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        skill, created = Skill.objects.get_or_create(name=skill_name)
-        if created:
-            staff.skills.add(skill)
-            return Response({'message': f'Skill {skill.name} created successfully for {staff.user.username}.'}, status=status.HTTP_201_CREATED)
+        service = Service.objects.get(pk=service_id)
+        if service in staff.services.all():
+            return Response({'message': 'Service already exists.'}, status=status.HTTP_200_OK)
         else:
-            return Response({'message': 'Skill already exists.'}, status=status.HTTP_200_OK)
+
+            staff.services.add(service)
+            return Response({'message': f'Service {service.title} addded successfully for {staff.user.username}.'}, status=status.HTTP_200_OK)
+            
 
 
-class DeleteSkillForStaffView(APIView):
-    def delete(self, request, pk, skill_name):
+class DeleteServiceForStaffView(APIView):
+    def delete(self, request, pk, srv_pk):
         try:
             staff = Staff.objects.get(id=pk)
         except Staff.DoesNotExist:
             return Response({'message': 'Staff not found.'}, status=status.HTTP_404_NOT_FOUND)
 
         try:
-            skill = Skill.objects.get(name=skill_name)
-        except Skill.DoesNotExist:
-            return Response({'message': 'Skill not found.'}, status=status.HTTP_404_NOT_FOUND)
+            service = Service.objects.get(pk=srv_pk)
+        except Service.DoesNotExist:
+            return Response({'message': 'Service not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-        staff.skills.remove(skill)
-        return Response({'message': f'Skill {skill.name} removed from staff {staff.user.username} successfully.'}, status=status.HTTP_200_OK)
+        staff.services.remove(service)
+        return Response({'message': f'Service {service.title} removed from staff {staff.user.username} successfully.'}, status=status.HTTP_200_OK)
+    
+
 # class RegistrationView(APIView):
 #     def post(self, request):
 #         serializer = UserSerializer(data=request.data)
@@ -125,10 +146,8 @@ class UserRegistrationAPIView(APIView):
             client = serializer.save()
             client.is_active = False
             client.save()
-            # uidb64 = urlsafe_base64_encode(force_bytes(client.pk))
-            # token = default_token_generator.make_token(client)
-            code = generate_6_digit_code() # Replace this with your own code to generate a 6-digit code
-            print(code)
+            code = generate_6_digit_code()
+            
             cache.set(f'confirmation_code_{client.id}', code)
             send_mail(
                 'Activate your account',
@@ -161,6 +180,7 @@ class ActivateUserAPIView(APIView):
         else:
             return Response({'error': 'Activation Code is invalid!'}, status=status.HTTP_400_BAD_REQUEST)
 
+
 class StaffRegistrationView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated, IsSuperUser]
@@ -172,7 +192,14 @@ class StaffRegistrationView(APIView):
             user.set_password(password)
             user.is_staff = True
             user.save()
-            staff = Staff.objects.create(user=user,salary=request.data.get('salary'))
+            
+            staff = Staff.objects.create(user=user,department=request.data.get('department'),salary=request.data.get('salary'),availability=request.data.get('availability'),is_supervisor=request.data.get('is_supervisor'))
+            services = self.request.data.get('services').split(',')
+            list = []
+            for serv in services:
+                service = Service.objects.get(pk=serv)
+                list.append(service)
+            staff.services.set(list)
             # token, created = Token.objects.get_or_create(user=user)
             return Response({'success': 'Stuff user Created Successfully','pk':staff.pk}, status=status.HTTP_201_CREATED)
         else:
@@ -180,7 +207,7 @@ class StaffRegistrationView(APIView):
 
 class LoginView(APIView):
     def get(self, request):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             return Response({""})
         return Response({""})
     def post(self, request):
@@ -198,7 +225,9 @@ class LoginView(APIView):
                 'id': user.id,
                 'username': user.username,
                 'email': user.email,
-                'is_staff': user.is_staff
+                'full_name':user.get_full_name(),
+                'is_staff': user.is_staff,
+                'mobile': user.mobile
             }
             # Return the token in the response body
             return Response(data,status=status.HTTP_200_OK)

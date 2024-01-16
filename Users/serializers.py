@@ -8,35 +8,75 @@ from rest_framework.exceptions import ValidationError
 from django.utils.http import urlsafe_base64_decode as uid_decoder
 from django.contrib.auth.tokens import default_token_generator
 from .models import Staff
+from Ticket.models import Service
+from Ticket.serializers import ServiceSerializer
+from django.core.validators import RegexValidator
 # Get the UserModel
 UserModel = get_user_model()
 User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username' ,'email', 'first_name', 'last_name' ,'is_staff']
+        fields = ['id', 'username' ,'email', 'first_name', 'last_name' ,'is_staff', 'mobile']
         
 class StaffSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     username = serializers.SerializerMethodField()
     email = serializers.SerializerMethodField()
-    skills = serializers.StringRelatedField(many=True)
-
+    services = serializers.ManyRelatedField(child_relation=ServiceSerializer())
+    # is_staff = serializers.HiddenField(readonly=True,default=True)
     class Meta:
         model = Staff
-        fields = ['id', 'user','username','email', 'department', 'salary', 'availability', 'skills']
+        fields = ['id', 'user','username','email', 'department', 'salary', 'availability', 'services']
     def get_username(self, obj):
         return obj.user.username
     def get_email(self, obj):
         return obj.user.email
+    
+    def update(self, instance, validated_data):
+        services_data = validated_data.pop('services', None)
+        if services_data is not None:
+            services = []
+            for service_id in services_data.split(','):
+                try:
+                    service = Service.objects.get(pk=service_id)
+                    services.append(service)
+                except Service.DoesNotExist:
+                    pass
+            instance.services.set(services)
+        return instance
 
+    
+# class StaffCSerializer(serializers.ModelSerializer):
+#     # user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+#     username = serializers.CharField()
+#     password = serializers.CharField(write_only=True)
+#     email = serializers.EmailField()
+#     first_name = serializers.CharField()
+#     last_name = serializers.CharField()
+#     department = serializers.CharField()
+#     salary = serializers.DecimalField(max_digits=10, decimal_places=2,default=0.)
+#     availability = serializers.BooleanField(default=True)
+#     is_supervisor = serializers.BooleanField(default=True)
+#     mobile = serializers.IntegerField()
+#     services = serializers.ManyRelatedField(child_relation=ServiceSerializer)
+#     # is_staff = serializers.HiddenField(readonly=True,default=True)
+#     class Meta:
+#         model = Staff
+#         fields = ['username','email','password','first_name','last_name','mobile', 'department', 'salary', 'availability','is_supervisor', 'services']
+    
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True)
+    mobile_regex = RegexValidator(
+        regex=r'^\d{10}$',
+        message="Mobile number must be exactly 10 digits."
+    )
 
+    mobile = serializers.CharField(validators=[mobile_regex])
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'confirm_password']
+        fields = ['username', 'email', 'password', 'confirm_password','first_name','last_name', 'mobile']
 
     def validate(self, data):
         if data['password'] != data['confirm_password']:
@@ -47,7 +87,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
-            password=validated_data['password']
+            password=validated_data['password'],
+            mobile=validated_data['mobile'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name']
         )
         user.is_active = False
         user.save()
