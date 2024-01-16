@@ -3,12 +3,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Ticket
 from Users.permissins import IsSuperUser
-
+from rest_framework.permissions import IsAdminUser
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticatedOrReadOnly,IsAuthenticated
 from .models import Ticket, Service, ServiceCategory
-from .serializers import TicketSerializer, ServiceSerializer, ServiceCategorySerializer, TicketCreationSerializer
-
+from .serializers import TicketSerializer, ServiceSerializer, ServiceCategorySerializer, TicketCreationSerializer, StaffTicketSerializer
+from Users.models import Staff
 # reading categories
 class ServiceCategoryList(generics.ListAPIView):
     queryset = ServiceCategory.objects.all()
@@ -61,13 +61,50 @@ class TicketDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TicketCreationSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
-    # def perform_update(self, serializer):
-    #     ticket = serializer.save()
-    #     if ticket.status == 'Closed':
-    #         ticket.client_rating = self.request.data.get('client_rating')
-    #         ticket.save()
+class StaffTicketsList(generics.ListAPIView):
+    serializer_class = TicketSerializer
+    permission_classes = [IsAdminUser]
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_staff:
+            return Ticket.objects.filter(service__in=user.staff.services.all())
+        else:
+            return Ticket.objects.none()
+        
 
+class StaffAssignTicket(generics.RetrieveUpdateAPIView):
+    serializer_class = StaffTicketSerializer
+    permission_classes = [IsAdminUser]
 
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_staff:
+            return Ticket.objects.filter(service__in=user.staff.services.all())
+        else:
+            return Ticket.objects.none()
+    
+    def perform_update(self, serializer):
+        ticket = serializer.save()
+        user = self.request.user
+        try:
+            staff = Staff.objects.get(user=user)
+        except:
+            raise Staff.DoesNotExist
+        if ticket.assigned_to != staff:
+            ticket.assigned_to = staff
+
+        if staff.is_supervisor:
+            workers_data = self.request.data.get('workers', None)
+            if workers_data is not None:
+                workers = []
+                for worker_id in workers_data.split(','):
+                    try:
+                        worker = Staff.objects.get(pk=worker_id)
+                        workers.append(worker)
+                    except Staff.DoesNotExist:
+                        pass
+                ticket.workers.set(workers)
+        ticket.save()
 # class QRCodeScanView(APIView):
 #     def post(self, request):
 #         qr_code_path = request.data.get('qr_code')
