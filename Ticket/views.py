@@ -19,6 +19,7 @@ class ServiceCategoryCreate(generics.CreateAPIView):
     queryset = ServiceCategory.objects.all()
     serializer_class = ServiceCategorySerializer
     permission_classes = [IsSuperUser]
+    # parser_classes = []
 
 class ServiceCategoryDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = ServiceCategory.objects.all()
@@ -42,6 +43,18 @@ class ServiceDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ServiceSerializer
     permission_classes = [IsSuperUser]
 
+class ServiceListByCategory(generics.ListAPIView):
+    serializer_class = ServiceSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        # Assuming you have a category ID passed as a query parameter (e.g., ?category_id=1)
+        category_id = self.request.query_params.get('category_id')
+        if category_id:
+            return Service.objects.filter(service_category__id=category_id)
+        else:
+            # Return all services if no category ID is provided
+            return Service.objects.all()
 # Ticket
 class TicketCreate(generics.CreateAPIView):
     serializer_class = TicketCreationSerializer

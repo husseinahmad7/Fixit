@@ -4,13 +4,20 @@ from django.urls import reverse
 from Ticket.models import Service
 
 class User(AbstractUser):
-    mobile = models.CharField("mobile",max_length=20,blank=True,null=True)
-    email = models.EmailField("email address", unique=True)
-    
+    username = None
+    first_name = None
+    last_name = None
+    email = models.EmailField("Email address", unique=True)
+    full_name = models.CharField("Full name",max_length=30)
+    mobile = models.CharField("Mobile",max_length=20,blank=True,null=True)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['full_name', 'mobile'] 
     def get_absolute_url(self):
         return reverse("user-info", kwargs={"pk": self.pk})
     
-
+    def __str__(self):
+        return f"{self.full_name}"
 # class Skill(models.Model):
 #     name = models.CharField(max_length=100, unique=True)
 #     def __str__(self):
@@ -32,7 +39,7 @@ class Staff(models.Model):
     def get_absolute_url(self):
         return reverse("staff-retrieve", kwargs={"pk": self.pk})
     def __str__(self):
-        return f"{self.user.username}"
+        return f"{self.user.full_name}"
 # class UserManager(BaseUserManager):
 #     def create_user(self, username, email, password=None, **extra_fields):
 #         if not email:

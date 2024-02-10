@@ -17,19 +17,17 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username' ,'email', 'first_name', 'last_name' ,'is_staff', 'mobile']
+        fields = ['id','email', 'full_name','is_staff', 'mobile']
         
 class StaffSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-    username = serializers.SerializerMethodField()
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.filter(is_staff=True))
+    
     email = serializers.SerializerMethodField()
     services = serializers.ManyRelatedField(child_relation=ServiceSerializer())
     # is_staff = serializers.HiddenField(readonly=True,default=True)
     class Meta:
         model = Staff
-        fields = ['id', 'user','username','email', 'department', 'salary', 'availability', 'services']
-    def get_username(self, obj):
-        return obj.user.username
+        fields = ['id', 'user','email', 'department', 'salary', 'availability', 'services']
     def get_email(self, obj):
         return obj.user.email
     
@@ -76,7 +74,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     mobile = serializers.CharField(validators=[mobile_regex])
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'confirm_password','first_name','last_name', 'mobile']
+        fields = ['email', 'password', 'confirm_password','full_name', 'mobile']
 
     def validate(self, data):
         if data['password'] != data['confirm_password']:
@@ -84,13 +82,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        user = User.objects.create_user(
-            username=validated_data['username'],
+        user = User.objects.create(
             email=validated_data['email'],
             password=validated_data['password'],
             mobile=validated_data['mobile'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name']
+            full_name=validated_data['full_name'],
+            
         )
         user.is_active = False
         user.save()

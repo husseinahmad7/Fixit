@@ -103,7 +103,7 @@ class AddServiceForStaffView(APIView):
         else:
 
             staff.services.add(service)
-            return Response({'message': f'Service {service.title} addded successfully for {staff.user.username}.'}, status=status.HTTP_200_OK)
+            return Response({'message': f'Service {service.title} addded successfully for {staff.user.full_name}.'}, status=status.HTTP_200_OK)
             
 
 
@@ -120,7 +120,7 @@ class DeleteServiceForStaffView(APIView):
             return Response({'message': 'Service not found.'}, status=status.HTTP_404_NOT_FOUND)
 
         staff.services.remove(service)
-        return Response({'message': f'Service {service.title} removed from staff {staff.user.username} successfully.'}, status=status.HTTP_200_OK)
+        return Response({'message': f'Service {service.title} removed from staff {staff.user.full_name} successfully.'}, status=status.HTTP_200_OK)
     
 
 # class RegistrationView(APIView):
@@ -211,21 +211,21 @@ class LoginView(APIView):
             return Response({""})
         return Response({""})
     def post(self, request):
-        # Get the username and password from the request body
-        username = request.data.get('username')
+        # Get the email and password from the request body
+        email = request.data.get('email')
         password = request.data.get('password')
 
         # Authenticate the user
-        user = authenticate(request=request, username=username, password=password)
+        user = authenticate(request=request, email=email, password=password)
         if user is not None:
             # Generate a token for the user
             token,created = Token.objects.get_or_create(user=user)
             data = {
                 'token': token.key,
                 'id': user.id,
-                'username': user.username,
+                
                 'email': user.email,
-                'full_name':user.get_full_name(),
+                'full_name':user.full_name,
                 'is_staff': user.is_staff,
                 'mobile': user.mobile
             }
