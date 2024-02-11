@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Ticket
 from Users.permissins import IsSuperUser
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticatedOrReadOnly,IsAuthenticated
 from .models import Ticket, Service, ServiceCategory
@@ -37,6 +37,11 @@ class ServiceCreate(generics.CreateAPIView):
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
     permission_classes = [IsSuperUser]
+
+class ServiceRetrieve(generics.RetrieveAPIView):
+    queryset = Service.objects.all()
+    serializer_class = ServiceSerializer
+    permission_classes = [AllowAny]
 
 class ServiceDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Service.objects.all()

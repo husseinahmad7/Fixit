@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ServiceCategoryList,ServiceCategoryCreate,ServiceCategoryDetail,ServiceList,ServiceCreate,ServiceDetail,ServiceListByCategory,TicketCreate,ClientTicketsList,TicketDetail,StaffTicketsList,StaffAssignTicket
+from .views import ServiceCategoryList,ServiceCategoryCreate,ServiceCategoryDetail,ServiceList,ServiceCreate,ServiceDetail,ServiceRetrieve,ServiceListByCategory,TicketCreate,ClientTicketsList,TicketDetail,StaffTicketsList,StaffAssignTicket
 urlpatterns = [
     path('service/cat/list',ServiceCategoryList.as_view()),
     path('service/cat/create',ServiceCategoryCreate.as_view()),
@@ -7,6 +7,8 @@ urlpatterns = [
     path('service/list',ServiceList.as_view()),
     path('service/create',ServiceCreate.as_view()),
     path('service/<int:pk>',ServiceDetail.as_view()),
+    path('service/show/<int:pk>',ServiceRetrieve.as_view()),
+
     path('create/',TicketCreate.as_view()),
     path('list/',ClientTicketsList.as_view()),
     path('client_update/<int:pk>/',TicketDetail.as_view()),
