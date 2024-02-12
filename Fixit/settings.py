@@ -25,9 +25,6 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'),overwrite=True)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-(296(_#z-(^bi1v=v$kh8-nr=5u0gs$x(^k*!c3d5r1_%t13+m'
 SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
@@ -46,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'gdstorage',
     'rest_framework',
     'rest_framework.authtoken',
     'Users',
@@ -187,3 +185,5 @@ EMAIL_PORT =587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+
+GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = None

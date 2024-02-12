@@ -8,9 +8,16 @@ from django.dispatch import receiver
 from django.core.files.storage import default_storage
 # Create your models here.
 # import uuid
+
+from gdstorage.storage import GoogleDriveStorage
+
+# Define Google Drive Storage
+gd_storage = GoogleDriveStorage()
+
+
 class ServiceCategory(models.Model):
     title = models.CharField(max_length=100)
-    icon = models.ImageField(upload_to='cat_icons/')
+    icon = models.ImageField(upload_to='cat_icons/', storage=gd_storage)
     def __str__(self):
         return self.title
 
@@ -19,7 +26,7 @@ class Service(models.Model):
     description = models.TextField()
     initial_price = models.DecimalField(max_digits=10, decimal_places=2)
     service_category = models.ForeignKey(ServiceCategory, on_delete=models.CASCADE, related_name='services')
-    picture = models.ImageField(upload_to='serv_pictures/')
+    picture = models.ImageField(upload_to='serv_pictures/',storage=gd_storage)
 
     def __str__(self):
         return self.title
@@ -73,7 +80,7 @@ class Ticket(models.Model):
 
 class TicketPicture(models.Model):
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name='pictures')
-    picture = models.ImageField(upload_to='attachments/')
+    picture = models.ImageField(upload_to='attachments/',storage=gd_storage)
 
 @receiver(post_delete, sender=TicketPicture)
 def delete_ticket_picture(sender, instance, **kwargs):
