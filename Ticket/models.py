@@ -20,6 +20,11 @@ class ServiceCategory(models.Model):
     icon = models.ImageField(upload_to='cat_icons/', storage=gd_storage)
     def __str__(self):
         return self.title
+    def save(self, *args, **kwargs):
+        image_url = self.icon.url.replace('&export=download')
+        self.icon = image_url
+
+        super().save(*args, **kwargs)
 
 class Service(models.Model):
     title = models.CharField(max_length=100)
@@ -30,7 +35,11 @@ class Service(models.Model):
 
     def __str__(self):
         return self.title
-    
+    def save(self, *args, **kwargs):
+        image_url = self.picture.url.replace('&export=download')
+        self.picture = image_url
+
+        super().save(*args, **kwargs)
 
 
 class Ticket(models.Model):
@@ -85,37 +94,37 @@ class TicketPicture(models.Model):
 @receiver(post_delete, sender=TicketPicture)
 def delete_ticket_picture(sender, instance, **kwargs):
     if instance.picture:
-        default_storage.delete(instance.picture.name)
+        instance.picture.delete(save=False)
 
 @receiver(post_delete, sender=ServiceCategory)
 def delete_cat_icon(sender, instance, **kwargs):
     if instance.icon:
         instance.icon.delete(save=False)
 
-        default_storage.delete(instance.icon.name)
-
 @receiver(post_delete, sender=Service)
 def delete_service_picture(sender, instance, **kwargs):
     if instance.picture:
-        default_storage.delete(instance.picture.name)
+        instance.picture.delete(save=False)
 
 @receiver(pre_save, sender=ServiceCategory)
 def delete_old_cat_picture(sender, instance, **kwargs):
     if instance.pk:
         old_cat = ServiceCategory.objects.get(pk=instance.pk)
         if old_cat.icon != instance.icon:
-            default_storage.delete(old_cat.icon.name)
+            old_cat.icon.delete(save=False)
+            
 
 @receiver(pre_save, sender=Service)
 def delete_old_service_picture(sender, instance, **kwargs):
     if instance.pk:
         old_service = Service.objects.get(pk=instance.pk)
         if old_service.picture != instance.picture:
-            default_storage.delete(old_service.picture.name)
+            old_service.picture.delete(save=False)
+            
 
 @receiver(pre_save, sender=TicketPicture)
 def delete_old_ticket_picture(sender, instance, **kwargs):
     if instance.pk:
         old_ticketpic = TicketPicture.objects.get(pk=instance.pk)
         if old_ticketpic.picture != instance.picture:
-            default_storage.delete(old_ticketpic.picture.name)
+            old_ticketpic.picture.delete(save=False)
