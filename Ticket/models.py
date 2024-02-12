@@ -21,7 +21,7 @@ class ServiceCategory(models.Model):
     def __str__(self):
         return self.title
     def save(self, *args, **kwargs):
-        image_url = self.icon.url.replace('&export=download')
+        image_url = self.icon.url.replace('&export=download','')
         self.icon = image_url
 
         super().save(*args, **kwargs)
@@ -36,7 +36,7 @@ class Service(models.Model):
     def __str__(self):
         return self.title
     def save(self, *args, **kwargs):
-        image_url = self.picture.url.replace('&export=download')
+        image_url = self.picture.url.replace('&export=download','')
         self.picture = image_url
 
         super().save(*args, **kwargs)
