@@ -21,7 +21,7 @@ env = environ.Env(
     DEBUG=(bool, False)
 )
 # Take environment variables from .env file
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'),overwrite=True)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -103,32 +103,10 @@ WSGI_APPLICATION = 'Fixit.wsgi.application'
 #     'PORT': '5432'
 # }}
 
-
+print(env('DB_URL'))
 DATABASES = {
 'default':dj_database_url.parse(env('DB_URL'),ssl_require=True)
 }
-
-
-# DB_NAME = "fixit"
-# DB_USER = "fixit_user"
-# DB_PASSWORD = "I9MgJ0ZjBjNWeCGmWNCcy1c0jIHGF6za"
-# DATABASES = {
-#     # 'default': {
-#     #     'ENGINE': 'django.db.backends.sqlite3',
-#     #     'NAME': BASE_DIR / 'db.sqlite3',
-#     # },
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': DB_NAME,
-#         'USER': DB_USER,
-#         'PASSWORD': DB_PASSWORD,
-#         'HOST': 'dpg-cmh591f109ks739b8rl0-a.oregon-postgres.render.com',
-#         'PORT': '5432'
-#     },
-# }
-# DATABASES= {}
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
