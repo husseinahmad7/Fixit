@@ -20,11 +20,6 @@ class ServiceCategory(models.Model):
     icon = models.ImageField(upload_to='cat_icons/', storage=gd_storage)
     def __str__(self):
         return self.title
-    def save(self, *args, **kwargs):
-        image_url = self.icon.url.replace('&export=download','')
-        self.icon = image_url
-
-        super().save(*args, **kwargs)
 
 class Service(models.Model):
     title = models.CharField(max_length=100)
@@ -35,11 +30,6 @@ class Service(models.Model):
 
     def __str__(self):
         return self.title
-    def save(self, *args, **kwargs):
-        image_url = self.picture.url.replace('&export=download','')
-        self.picture = image_url
-
-        super().save(*args, **kwargs)
 
 
 class Ticket(models.Model):
