@@ -90,6 +90,8 @@ def delete_ticket_picture(sender, instance, **kwargs):
 @receiver(post_delete, sender=ServiceCategory)
 def delete_cat_icon(sender, instance, **kwargs):
     if instance.icon:
+        instance.icon.delete(save=False)
+
         default_storage.delete(instance.icon.name)
 
 @receiver(post_delete, sender=Service)
