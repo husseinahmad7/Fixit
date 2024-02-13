@@ -140,6 +140,8 @@ class DeleteServiceForStaffView(APIView):
 
 
 class UserRegistrationAPIView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [AllowAny]
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
@@ -206,6 +208,8 @@ class StaffRegistrationView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [AllowAny]
     def get(self, request):
         if request.user.is_authenticated:
             return Response({""})

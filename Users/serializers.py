@@ -84,11 +84,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create(
             email=validated_data['email'],
-            password=validated_data['password'],
             mobile=validated_data['mobile'],
             full_name=validated_data['full_name'],
             
         )
+        user.set_password(validated_data['password']) 
         user.is_active = False
         user.save()
         return user
