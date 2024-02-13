@@ -212,7 +212,7 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
     def get(self, request):
         if request.user.is_authenticated:
-            return Response({""})
+            return Response({"message":"Already logged in."})
         return Response({""})
     def post(self, request):
         # Get the email and password from the request body
@@ -222,19 +222,23 @@ class LoginView(APIView):
         # Authenticate the user
         user = authenticate(request=request, email=email, password=password)
         if user is not None:
-            # Generate a token for the user
-            token,created = Token.objects.get_or_create(user=user)
-            data = {
-                'token': token.key,
-                'id': user.id,
-                
-                'email': user.email,
-                'full_name':user.full_name,
-                'is_staff': user.is_staff,
-                'mobile': user.mobile
-            }
-            # Return the token in the response body
-            return Response(data,status=status.HTTP_200_OK)
+            if user.is_active:
+                # Generate a token for the user
+                token,created = Token.objects.get_or_create(user=user)
+                data = {
+                    'token': token.key,
+                    'id': user.id,
+                    
+                    'email': user.email,
+                    'full_name':user.full_name,
+                    'is_staff': user.is_staff,
+                    'mobile': user.mobile
+                }
+                # Return the token in the response body
+                return Response(data,status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'Please activate your acount first'},status=status.HTTP_403_FORBIDDEN)
+
         else:
             # Return an error response
             return Response({'error': 'Invalid credentials'}, status=400)
