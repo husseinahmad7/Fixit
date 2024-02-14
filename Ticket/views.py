@@ -6,9 +6,11 @@ from Users.permissins import IsSuperUser
 from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticatedOrReadOnly,IsAuthenticated
-from .models import Ticket, Service, ServiceCategory
+from .models import Ticket, Service, ServiceCategory, TicketPicture
 from .serializers import TicketSerializer, ServiceSerializer, ServiceCategorySerializer, TicketCreationSerializer, StaffTicketSerializer
 from Users.models import Staff
+from rest_framework.parsers import MultiPartParser, FormParser
+
 # reading categories
 class ServiceCategoryList(generics.ListAPIView):
     queryset = ServiceCategory.objects.all()
@@ -62,8 +64,23 @@ class ServiceListByCategory(generics.ListAPIView):
             return Service.objects.all()
 # Ticket
 class TicketCreate(generics.CreateAPIView):
+    """
+    API view for creating a ticket along with attached pictures.
+    """
+    queryset = Ticket.objects.all()
     serializer_class = TicketCreationSerializer
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def perform_create(self, serializer):
+        # Save the ticket data
+        ticket_instance = serializer.save()
+
+        # Handle attached pictures
+        pictures_data = self.request.FILES.getlist('pictures')  # 'pictures' is the field name
+        for picture_data in pictures_data:
+            TicketPicture.objects.create(ticket=ticket_instance, picture=picture_data)
+
 
 class ClientTicketsList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
@@ -138,3 +155,4 @@ class StaffAssignTicket(generics.RetrieveUpdateAPIView):
 #         ticket.save()
 
 #         return Response({'message': 'Ticket marked as paid and done'}, status=status.HTTP_200_OK)
+

@@ -5,7 +5,7 @@ from django.core.files import File
 # from Users.models import Staff, User
 from django.db.models.signals import post_delete, pre_save
 from django.dispatch import receiver
-from django.core.files.storage import default_storage
+# from django.core.files.storage import default_storage
 # Create your models here.
 # import uuid
 
@@ -22,12 +22,18 @@ class ServiceCategory(models.Model):
         return self.title
 
 class Service(models.Model):
+    TYPES = [
+        ('Fixing', 'Fixing service'),
+        ('Support', 'Support service'),
+        ('Setting', 'Setting service')
+        
+    ]
     title = models.CharField(max_length=100)
     description = models.TextField()
     initial_price = models.DecimalField(max_digits=10, decimal_places=2)
     service_category = models.ForeignKey(ServiceCategory, on_delete=models.CASCADE, related_name='services')
     picture = models.ImageField(upload_to='serv_pictures/',storage=gd_storage)
-
+    type = models.CharField(max_length=10,choices=TYPES,default='Fixing')
     def __str__(self):
         return self.title
 
@@ -39,10 +45,13 @@ class Ticket(models.Model):
         ('Pending', 'Pending'),
         ('Closed', 'Closed'),
     ]
+    # def json():
+    #     return {"":"",}
     client = models.ForeignKey('Users.User', on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     description = models.TextField()
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='tickets', null=True, blank=True)
+    info_fields = models.JSONField()
     approved = models.BooleanField(default=False)
     assigned_to = models.ForeignKey('Users.Staff', on_delete=models.CASCADE, related_name='tickets', null=True, blank=True)
     status = models.CharField(max_length=100, choices=STATUS_CHOICES,default='Open')
@@ -52,6 +61,7 @@ class Ticket(models.Model):
     submission_date = models.DateTimeField(auto_now_add=True)
     # qr_code = models.ImageField(upload_to='qr_codes/', null=True, blank=True)
     workers = models.ManyToManyField('Users.Staff', related_name='tickets_assigned', blank=True)
+
 
     class Meta:
         ordering = ['submission_date']
