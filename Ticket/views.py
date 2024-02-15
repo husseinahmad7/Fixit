@@ -105,18 +105,18 @@ class StaffTicketsList(generics.ListAPIView):
             return Ticket.objects.filter(service__in=user.staff.services.all())
         else:
             return Ticket.objects.none()
-        
+
 
 class StaffAssignTicket(generics.RetrieveUpdateAPIView):
     serializer_class = StaffTicketSerializer
     permission_classes = [IsAdminUser]
 
-    def get_queryset(self):
-        user = self.request.user
-        if user.is_staff:
-            return Ticket.objects.filter(service__in=user.staff.services.all())
-        else:
-            return Ticket.objects.none()
+    # def get_queryset(self):
+    #     user = self.request.user
+    #     if user.is_staff:
+    #         return Ticket.objects.filter(service__in=user.staff.services.all())
+    #     else:
+    #         return Ticket.objects.none()
     
     def perform_update(self, serializer):
         ticket = serializer.save()
@@ -128,13 +128,18 @@ class StaffAssignTicket(generics.RetrieveUpdateAPIView):
         if ticket.assigned_to != staff:
             ticket.assigned_to = staff
 
+        # Check if the ticket service is in the staff services
+        if ticket.service not in staff.services.all():
+            return Response({"detail": "Not allowed. The Ticket Service is not in staff services."},
+                            status=status.HTTP_403_FORBIDDEN)
+        
         if staff.is_supervisor:
             workers_data = self.request.data.get('workers', None)
             if workers_data is not None:
                 workers = []
                 for worker_id in workers_data.split(','):
                     try:
-                        worker = Staff.objects.get(pk=worker_id)
+                        worker = Staff.objects.get(pk=worker_id,is_supervisor=False)
                         workers.append(worker)
                     except Staff.DoesNotExist:
                         pass

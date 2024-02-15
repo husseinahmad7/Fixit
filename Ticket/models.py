@@ -34,6 +34,8 @@ class Service(models.Model):
     service_category = models.ForeignKey(ServiceCategory, on_delete=models.CASCADE, related_name='services')
     picture = models.ImageField(upload_to='serv_pictures/',storage=gd_storage)
     type = models.CharField(max_length=10,choices=TYPES,default='Fixing')
+    is_final_price = models.BooleanField(default=False)
+
     def __str__(self):
         return self.title
 
@@ -41,22 +43,26 @@ class Service(models.Model):
 class Ticket(models.Model):
     STATUS_CHOICES = [
         ('Open', 'Open'),
+        ('Rejected', 'Rejected by company'),
+        ('Pending', 'Pending for client approval'),
+        ('Client Rejected', 'Rejected by client'),
         ('In Progress', 'In Progress'),
-        ('Pending', 'Pending'),
         ('Closed', 'Closed'),
+        ('Rated', 'Rated'),
+
     ]
-    # def json():
-    #     return {"":"",}
+    
     client = models.ForeignKey('Users.User', on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     description = models.TextField()
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='tickets', null=True, blank=True)
+    location = models.JSONField(null=True, blank=True)
     info_fields = models.JSONField()
-    approved = models.BooleanField(default=False)
     assigned_to = models.ForeignKey('Users.Staff', on_delete=models.CASCADE, related_name='tickets', null=True, blank=True)
-    status = models.CharField(max_length=100, choices=STATUS_CHOICES,default='Open')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES,default='Open')
     client_rating = models.IntegerField(blank=True,null=True)
     notes = models.TextField(blank=True,null=True)
+    final_price = models.DecimalField(max_digits=10, decimal_places=2,blank=True,null=True)
     is_paid = models.BooleanField(default=False)
     submission_date = models.DateTimeField(auto_now_add=True)
     # qr_code = models.ImageField(upload_to='qr_codes/', null=True, blank=True)

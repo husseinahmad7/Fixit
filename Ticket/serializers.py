@@ -25,7 +25,7 @@ class TicketSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ticket
-        fields = ['id', 'client','title', 'description', 'service', 'approved', 'assigned_to', 'status', 'client_rating', 'notes', 'is_paid', 'submission_date', 'workers']
+        fields = ['id', 'client','title', 'description', 'service','location','info_fields', 'assigned_to', 'status', 'client_rating', 'notes', 'is_paid', 'submission_date', 'workers']
 
 class  TicketCreationSerializer(serializers.ModelSerializer):
     client = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), default=serializers.CurrentUserDefault())
@@ -33,7 +33,7 @@ class  TicketCreationSerializer(serializers.ModelSerializer):
     # pictures = serializers.ManyRelatedField(child_relation=TicketPictureSerializer(),read_only=True)
     class Meta:
         model = Ticket
-        fields = ['client','title', 'description', 'service','status','client_rating']
+        fields = ['client','title', 'description', 'service','location','info_fields','status','client_rating']
     def get_status(self, obj):
         return obj.status
     def validate_client_rating(self, value):
@@ -46,5 +46,18 @@ class StaffTicketSerializer(serializers.ModelSerializer):
     # workers = serializers.StringRelatedField(read_only=True)
     class Meta:
         model = Ticket
-        fields = ['approved', 'assigned_to', 'status', 'notes', 'is_paid', 'workers']
+        fields = ['approved', 'assigned_to', 'status', 'notes','final_price', 'is_paid', 'workers']
         read_only_fields = ['workers']
+
+    def validate_final_price(self, value):
+        """
+        Validate the final_price based on the is_final_price flag of the ticket service.
+        """
+        ticket = self.instance  # Get the ticket instance being updated
+        service = ticket.service
+
+        if service.is_final_price:
+            # If the service has is_final_price set to True, ensure the final_price matches the service price
+            if value != service.price:
+                return service.price
+        return value

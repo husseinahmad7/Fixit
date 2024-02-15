@@ -5,7 +5,7 @@ from django.utils.decorators import method_decorator
 # from django.views.generic import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework import generics
 from rest_framework.generics import GenericAPIView
-from .serializers import UserSerializer,StaffSerializer ,UserRegistrationSerializer, PasswordChangeSerializer, PasswordResetConfirmSerializer, PasswordResetSerializer
+from .serializers import UserSerializer,StaffSerializer ,WorkerSerializer ,UserRegistrationSerializer, PasswordChangeSerializer, PasswordResetConfirmSerializer, PasswordResetSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -84,6 +84,18 @@ class StaffsRetrieveDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
     #             service = Service.objects.get(pk=serv)
     #             list.append(service)
     #         staff.services.set(list)
+
+class ServiceWorkersList(generics.ListAPIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    serializer_class = WorkerSerializer
+    
+    def get_queryset(self):
+        service_id = self.kwargs.get('service_id')
+        service = Service.objects.get(pk=service_id)
+        return Staff.objects.filter(services__contains=service,is_supervisor=False)
+
 class AddServiceForStaffView(APIView):
     permission_classes = [IsSuperUser]
 
@@ -258,6 +270,7 @@ class LogoutView(APIView):
 
         # Return a success response
         return Response({'success': 'User logged out successfully.'})
+
 
 
 

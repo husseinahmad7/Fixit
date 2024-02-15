@@ -27,7 +27,7 @@ class StaffSerializer(serializers.ModelSerializer):
     # is_staff = serializers.HiddenField(readonly=True,default=True)
     class Meta:
         model = Staff
-        fields = ['id', 'user','email', 'department', 'salary', 'availability', 'services']
+        fields = ['id', 'user','email', 'department', 'salary', 'availability', 'services','is_supervisor']
     def get_email(self, obj):
         return obj.user.email
     
@@ -44,7 +44,10 @@ class StaffSerializer(serializers.ModelSerializer):
             instance.services.set(services)
         return instance
 
-    
+class WorkerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Staff
+        fields = ['id', 'user','email', 'department', 'salary', 'availability', 'services']
 # class StaffCSerializer(serializers.ModelSerializer):
 #     # user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 #     username = serializers.CharField()

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import LoginView,UsersListCreateView,StaffsRetrieveDeleteUpdateView,StaffListApiView,UserRegistrationAPIView,ActivateUserAPIView,UserRetrieveUpdateAPIView, UsersRetrieveDeleteUpdateView,LogoutView,StaffRegistrationView,PasswordChangeView,PasswordResetConfirmView,PasswordResetView,AddServiceForStaffView,DeleteServiceForStaffView
+from .views import LoginView,UsersListCreateView,StaffsRetrieveDeleteUpdateView,StaffListApiView,ServiceWorkersList,UserRegistrationAPIView,ActivateUserAPIView,UserRetrieveUpdateAPIView, UsersRetrieveDeleteUpdateView,LogoutView,StaffRegistrationView,PasswordChangeView,PasswordResetConfirmView,PasswordResetView,AddServiceForStaffView,DeleteServiceForStaffView
 from rest_framework.authtoken.views import obtain_auth_token
 
 
@@ -19,6 +19,8 @@ urlpatterns = [
     path('st/user/<int:pk>/', UsersRetrieveDeleteUpdateView.as_view(),name='retrieve'),
     path('st/staff/<int:pk>/', StaffsRetrieveDeleteUpdateView.as_view(),name='staff-retrieve'),
     path('st/stafflist/', StaffListApiView.as_view(),name='staff-list'),
+    path('st/workerslistbyserv/<int:service_id>', ServiceWorkersList.as_view(),name='workers-list-byserv'),
+
     path('st/staff/<int:pk>/addsrv', AddServiceForStaffView.as_view(),name='staff-task-add'),
     path('st/staff/<int:pk>/removesrv/<int:srv_pk>', DeleteServiceForStaffView.as_view(),name='staff-task-add'),
 
