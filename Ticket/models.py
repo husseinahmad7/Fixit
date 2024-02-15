@@ -46,7 +46,7 @@ class Ticket(models.Model):
         ('Rejected', 'Rejected by company'),
         ('Pending Approval', 'Pending for client approval'),
         ('Client Rejected', 'Rejected by client'),
-        ('Pending Payment', 'Pending for client approval'),
+        ('Pending Payment', 'Pending for client payment'),
         ('In Progress', 'In Progress'),
         ('Closed', 'Closed'),
         ('Rated', 'Rated'),
