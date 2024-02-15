@@ -43,6 +43,17 @@ class  TicketCreationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Client rating can only be updated when the ticket is closed.")
         return value
 
+class TicketStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = ['client','status','client_rating']
+
+    def validate_client_rating(self, value):
+        ticket = self.instance
+        if ticket.status != 'Closed' and value is not None:
+            raise serializers.ValidationError("Client rating can only be updated when the ticket is closed.")
+        return value
+
 class StaffTicketSerializer(serializers.ModelSerializer):
     # workers = serializers.StringRelatedField(read_only=True)
     class Meta:

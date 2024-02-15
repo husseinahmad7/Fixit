@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticatedOrReadOnly,IsAuthenticated
 from .models import Ticket, Service, ServiceCategory, TicketPicture
-from .serializers import TicketSerializer, ServiceSerializer, ServiceCategorySerializer, TicketCreationSerializer,TicketPictureSerializer, StaffTicketSerializer
+from .serializers import TicketSerializer, ServiceSerializer, ServiceCategorySerializer, TicketCreationSerializer,TicketPictureSerializer,TicketStatusSerializer, StaffTicketSerializer
 from Users.models import Staff
 from rest_framework.parsers import MultiPartParser, FormParser
 from .permissions import OwnerOrAdminPermission,TicketPictureOwnerOrAdminPermission
@@ -121,6 +121,34 @@ class TicketPictureDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = TicketPicture.objects.all()
     serializer_class = TicketPictureSerializer
     permission_classes = [TicketPictureOwnerOrAdminPermission]
+
+
+
+
+class TicketStatusUpdateView(generics.UpdateAPIView):
+    queryset = Ticket.objects.all()
+    serializer_class = TicketStatusSerializer
+    permission_classes = [IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        # Get the specific ticket based on URL parameter (e.g., /api/tickets/1/status/)
+        ticket_id = self.kwargs['pk']
+        ticket = self.get_object()
+
+        # Validate and update the ticket status
+        new_status = request.data.get('status')
+        if new_status in ['Client Rejected', 'Pending Payment'] and ticket.client == request.user:
+            ticket.status = new_status
+            ticket.save()
+            return self.partial_update(request, *args, **kwargs)
+        elif new_status == 'In Progress' and request.user.is_staff:
+            ticket.status = new_status
+            ticket.save()
+            return self.partial_update(request, *args, **kwargs)
+        else:
+            return Response({'error': 'Invalid status provided or action not allowed.'}, status=400)
+        
+
 
 class StaffTicketsList(generics.ListAPIView):
     serializer_class = TicketSerializer
