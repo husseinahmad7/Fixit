@@ -7,10 +7,10 @@ from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticatedOrReadOnly,IsAuthenticated
 from .models import Ticket, Service, ServiceCategory, TicketPicture
-from .serializers import TicketSerializer, ServiceSerializer, ServiceCategorySerializer, TicketCreationSerializer, StaffTicketSerializer
+from .serializers import TicketSerializer, ServiceSerializer, ServiceCategorySerializer, TicketCreationSerializer,TicketPictureSerializer, StaffTicketSerializer
 from Users.models import Staff
 from rest_framework.parsers import MultiPartParser, FormParser
-
+from .permissions import OwnerOrAdminPermission,TicketPictureOwnerOrAdminPermission
 # reading categories
 class ServiceCategoryList(generics.ListAPIView):
     queryset = ServiceCategory.objects.all()
@@ -88,13 +88,39 @@ class ClientTicketsList(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return Ticket.objects.filter(client=user)
+        queryset = Ticket.objects.filter(client=user)
+        # Check if the 'filtered' parameter is set to 'true'
+        filter_param = self.request.query_params.get('filtered')
+        if filter_param == 'true':
+            # Customize the status values as needed 
+            allowed_statuses = ['Open', 'In Progress', 'Pending','Closed']
+
+            # Filter tickets based on the allowed statuses
+            queryset = queryset.filter(status__in=allowed_statuses)
+
+        return queryset
     
 
 class TicketDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Ticket.objects.all()
     serializer_class = TicketCreationSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [OwnerOrAdminPermission]
+
+class TicketPictureCreateView(generics.CreateAPIView):
+    serializer_class = TicketPictureSerializer
+
+    def perform_create(self, serializer):
+        # Get the specific ticket based on URL parameter (e.g., /api/tickets/1/pictures/)
+        ticket_id = self.kwargs['pk']
+        ticket = Ticket.objects.get(pk=ticket_id)
+        ticket_picture = serializer.save()
+        ticket_picture.ticket = ticket
+        ticket_picture.save()
+
+class TicketPictureDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = TicketPicture.objects.all()
+    serializer_class = TicketPictureSerializer
+    permission_classes = [TicketPictureOwnerOrAdminPermission]
 
 class StaffTicketsList(generics.ListAPIView):
     serializer_class = TicketSerializer

@@ -16,6 +16,7 @@ class ServiceSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'initial_price', 'service_category','picture','type','is_final_price']
 
 class TicketPictureSerializer(serializers.ModelSerializer):
+    ticket = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
         model = TicketPicture
         fields = ['id','ticket', 'picture']
@@ -25,15 +26,15 @@ class TicketSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ticket
-        fields = ['id', 'client','title', 'description', 'service','location','info_fields', 'assigned_to', 'status', 'client_rating', 'notes', 'is_paid', 'submission_date', 'workers']
+        fields = ['id', 'client', 'description', 'service','location','info_fields', 'assigned_to', 'status', 'client_rating', 'notes', 'is_paid', 'submission_date', 'workers']
 
 class  TicketCreationSerializer(serializers.ModelSerializer):
     client = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), default=serializers.CurrentUserDefault())
     status = serializers.SerializerMethodField()
-    # pictures = serializers.ManyRelatedField(child_relation=TicketPictureSerializer(),read_only=True)
+    pictures = serializers.ManyRelatedField(child_relation=TicketPictureSerializer(),read_only=True)
     class Meta:
         model = Ticket
-        fields = ['client','title', 'description', 'service','location','info_fields','status','client_rating']
+        fields = ['client', 'description', 'service','location','info_fields','status','client_rating', 'pictures']
     def get_status(self, obj):
         return obj.status
     def validate_client_rating(self, value):
