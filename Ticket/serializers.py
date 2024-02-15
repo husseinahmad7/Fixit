@@ -13,7 +13,7 @@ class ServiceSerializer(serializers.ModelSerializer):
     service_category = serializers.PrimaryKeyRelatedField(queryset=ServiceCategory.objects.all())
     class Meta:
         model = Service
-        fields = ['id', 'title', 'description', 'initial_price', 'service_category','picture','type']
+        fields = ['id', 'title', 'description', 'initial_price', 'service_category','picture','type','is_final_price']
 
 class TicketPictureSerializer(serializers.ModelSerializer):
     class Meta:
