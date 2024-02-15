@@ -26,7 +26,7 @@ class TicketSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ticket
-        fields = ['id', 'client', 'description', 'service','location','info_fields', 'assigned_to', 'status', 'client_rating', 'notes', 'is_paid', 'submission_date', 'workers']
+        fields = ['id', 'client', 'description', 'service','location','info_fields', 'assigned_to', 'status', 'client_rating', 'notes', 'submission_date', 'workers']
 
 class  TicketCreationSerializer(serializers.ModelSerializer):
     client = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), default=serializers.CurrentUserDefault())
@@ -58,7 +58,7 @@ class StaffTicketSerializer(serializers.ModelSerializer):
     # workers = serializers.StringRelatedField(read_only=True)
     class Meta:
         model = Ticket
-        fields = ['approved', 'assigned_to', 'status', 'notes','final_price', 'is_paid', 'workers']
+        fields = ['approved', 'assigned_to', 'status', 'notes','final_price', 'workers']
         read_only_fields = ['workers']
 
     def validate_final_price(self, value):
