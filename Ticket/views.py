@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly,IsAuthenticated
 from .models import Ticket, Service, ServiceCategory, TicketPicture
 from .serializers import TicketSerializer, ServiceSerializer, ServiceCategorySerializer, TicketCreationSerializer,TicketPictureSerializer,TicketStatusSerializer, StaffTicketSerializer
 from Users.models import Staff
-from rest_framework.parsers import MultiPartParser, FormParser
+# from rest_framework.parsers import MultiPartParser, FormParser
 from .permissions import OwnerOrAdminPermission,TicketPictureOwnerOrAdminPermission
 # reading categories
 class ServiceCategoryList(generics.ListAPIView):
@@ -70,7 +70,6 @@ class TicketCreate(generics.CreateAPIView):
     queryset = Ticket.objects.all()
     serializer_class = TicketCreationSerializer
     permission_classes = [IsAuthenticated]
-    parser_classes = [MultiPartParser, FormParser]
 
     def perform_create(self, serializer):
         # Save the ticket data
