@@ -26,7 +26,7 @@ class TicketSerializer(serializers.ModelSerializer):
     service = ServiceSerializer()
     class Meta:
         model = Ticket
-        fields = ['id', 'client', 'description', 'service','location','info_fields', 'assigned_to', 'status', 'client_rating', 'notes', 'submission_date', 'workers']
+        fields = ['id', 'client', 'description', 'service','location','info_fields', 'assigned_to', 'status', 'client_rating', 'notes','final_price', 'submission_date', 'workers']
 
 class  TicketCreationSerializer(serializers.ModelSerializer):
     client = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), default=serializers.CurrentUserDefault())
