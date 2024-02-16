@@ -23,7 +23,7 @@ class TicketPictureSerializer(serializers.ModelSerializer):
 
 class TicketSerializer(serializers.ModelSerializer):
     client = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
-
+    service = ServiceSerializer()
     class Meta:
         model = Ticket
         fields = ['id', 'client', 'description', 'service','location','info_fields', 'assigned_to', 'status', 'client_rating', 'notes', 'submission_date', 'workers']
