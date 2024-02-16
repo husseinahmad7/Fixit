@@ -123,31 +123,53 @@ class TicketPictureDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 
-
-class TicketStatusUpdateView(generics.UpdateAPIView):
-    queryset = Ticket.objects.all()
+# update status
+    
+class ClientRejectView(generics.UpdateAPIView):
+    # queryset = Ticket.objects.all()
     serializer_class = TicketStatusSerializer
     permission_classes = [IsAuthenticated]
 
     def update(self, request, *args, **kwargs):
-        # Get the specific ticket based on URL parameter (e.g., /api/tickets/1/status/)
-        ticket_id = self.kwargs['pk']
+        # ticket_id = self.kwargs['pk']
         ticket = self.get_object()
 
         # Validate and update the ticket status
-        new_status = request.data.get('status')
-        if new_status in ['Client Rejected', 'Pending Payment'] and ticket.client == request.user:
-            ticket.status = new_status
-            ticket.save()
-            return self.partial_update(request, *args, **kwargs)
-        elif new_status == 'In Progress' and request.user.is_staff:
-            ticket.status = new_status
+        if ticket.client == request.user:
+            ticket.status = 'Client Rejected'
             ticket.save()
             return self.partial_update(request, *args, **kwargs)
         else:
-            return Response({'error': 'Invalid status provided or action not allowed.'}, status=400)
+            return Response({'error': 'Action is not allowed.'}, status=status.HTTP_403_FORBIDDEN)
         
+class ClientAcceptView(generics.UpdateAPIView):
+    # queryset = Ticket.objects.all()
+    serializer_class = TicketStatusSerializer
+    permission_classes = [IsAuthenticated]
 
+    def update(self, request, *args, **kwargs):
+        ticket = self.get_object()
+
+        if ticket.client == request.user:
+            ticket.status = 'Pending Payment'
+            ticket.save()
+            return self.partial_update(request, *args, **kwargs)
+        else:
+            return Response({'error': 'Action is not allowed.'}, status=status.HTTP_403_FORBIDDEN)
+        
+class MarkAsPaidView(generics.UpdateAPIView):
+    serializer_class = TicketStatusSerializer
+    permission_classes = [IsAdminUser]
+
+    def update(self, request, *args, **kwargs):
+        ticket = self.get_object()
+        
+        if request.user.is_staff:
+            ticket.status = 'In Progress'
+            ticket.save()
+            return self.partial_update(request, *args, **kwargs)
+        else:
+            return Response({'error': 'Action is not allowed.'}, status=status.HTTP_403_FORBIDDEN)
 
 class StaffTicketsList(generics.ListAPIView):
     serializer_class = TicketSerializer
