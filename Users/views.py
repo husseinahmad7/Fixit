@@ -53,7 +53,7 @@ class UsersRetrieveDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
     
 class UserRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer
-    queryset = User.objects.all()
+    # queryset = User.objects.all()
     permission_classes = [IsUserOrReadOnly]
 
 class StaffListApiView(generics.ListAPIView):

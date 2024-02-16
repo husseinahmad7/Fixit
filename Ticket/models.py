@@ -73,7 +73,7 @@ class Ticket(models.Model):
     class Meta:
         ordering = ['submission_date']
     def __str__(self) -> str:
-        return f'{self.pk} {self.title} -- {self.status}'
+        return f'{self.pk} -- {self.status}'
     # def clean(self):
     #     if self.assigned_to and not self.assigned_to.is_supervisor:
     #         raise ValidationError({"detail": "Assigned staff member must be a supervisor"})
