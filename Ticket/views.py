@@ -92,7 +92,7 @@ class ClientTicketsList(generics.ListAPIView):
         filter_param = self.request.query_params.get('filtered')
         if filter_param == 'true':
             # Customize the status values as needed 
-            allowed_statuses = ['Open', 'In Progress', 'Pending','Closed']
+            allowed_statuses = ['Open', 'In Progress', 'Pending Payment','Pending Approval','Closed']
 
             # Filter tickets based on the allowed statuses
             queryset = queryset.filter(status__in=allowed_statuses)
