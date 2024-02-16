@@ -157,6 +157,23 @@ class ClientAcceptView(generics.UpdateAPIView):
         else:
             return Response({'error': 'Action is not allowed.'}, status=status.HTTP_403_FORBIDDEN)
         
+
+        
+class ClientRateView(generics.UpdateAPIView):
+    # queryset = Ticket.objects.all()
+    serializer_class = TicketStatusSerializer
+    permission_classes = [IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        ticket = self.get_object()
+        rating = request.data.get('client_rating')
+        if ticket.client == request.user:
+            ticket.client_rating = rating
+            ticket.save()
+            return self.partial_update(request, *args, **kwargs)
+        else:
+            return Response({'error': 'Action is not allowed.'}, status=status.HTTP_403_FORBIDDEN)
+
 class MarkAsPaidView(generics.UpdateAPIView):
     serializer_class = TicketStatusSerializer
     permission_classes = [IsAdminUser]

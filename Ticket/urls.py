@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ServiceCategoryList,ServiceCategoryCreate,ServiceCategoryDetail,ServiceList,ServiceCreate,ServiceDetail,ServiceRetrieve,ServiceListByCategory,TicketCreate,ClientTicketsList,TicketDetail,TicketPictureCreateView,TicketPictureDetail,ClientRejectView,ClientAcceptView,MarkAsPaidView, StaffTicketsList,StaffAssignTicket
+from .views import ServiceCategoryList,ServiceCategoryCreate,ServiceCategoryDetail,ServiceList,ServiceCreate,ServiceDetail,ServiceRetrieve,ServiceListByCategory,TicketCreate,ClientTicketsList,TicketDetail,TicketPictureCreateView,TicketPictureDetail,ClientRejectView,ClientAcceptView,MarkAsPaidView,ClientRateView, StaffTicketsList,StaffAssignTicket
 urlpatterns = [
     path('service/cat/list',ServiceCategoryList.as_view()),
     path('service/cat/create',ServiceCategoryCreate.as_view()),
@@ -20,6 +20,7 @@ urlpatterns = [
     path('action/client_reject/<int:pk>',ClientRejectView.as_view()),
     path('action/client_accept/<int:pk>',ClientAcceptView.as_view()),
     path('action/mark_as_paid/<int:pk>',MarkAsPaidView.as_view()),
+    path('action/client_rate/<int:pk>',ClientRateView.as_view()),
 
 
 ]
