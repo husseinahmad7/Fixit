@@ -58,7 +58,7 @@ class StaffTicketSerializer(serializers.ModelSerializer):
     # workers = serializers.StringRelatedField(read_only=True)
     class Meta:
         model = Ticket
-        fields = ['approved', 'assigned_to', 'status', 'notes','final_price', 'workers']
+        fields = ['assigned_to','final_price', 'workers']
         read_only_fields = ['workers']
 
     def validate_final_price(self, value):
@@ -70,6 +70,6 @@ class StaffTicketSerializer(serializers.ModelSerializer):
 
         if service.is_final_price:
             # If the service has is_final_price set to True, ensure the final_price matches the service price
-            if value != service.price:
-                return service.price
+            if value != service.initial_price:
+                return service.initial_price
         return value
