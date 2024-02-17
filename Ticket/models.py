@@ -57,7 +57,7 @@ class Ticket(models.Model):
     # title = models.CharField(max_length=200)
     description = models.TextField()
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='tickets', null=True, blank=True)
-    location = models.JSONField(null=True, blank=True)
+    location = models.JSONField()
     info_fields = models.JSONField(null=True, blank=True)
     assigned_to = models.ForeignKey('Users.Staff', on_delete=models.CASCADE, related_name='tickets', null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES,default='Open')
