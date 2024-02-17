@@ -213,6 +213,12 @@ class StaffAssignedTicketsList(generics.ListAPIView):
 class StaffTicketDetailsView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = StaffTicketDetailsSerializer
     permission_classes = [IsAdminUser]
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_staff:
+            return Ticket.objects.filter(service__in=user.staff.services.all())
+        else:
+            return Ticket.objects.none()
 
 class StaffAssignTicket(generics.RetrieveUpdateAPIView):
     serializer_class = StaffTicketStatusSerializer
@@ -252,6 +258,16 @@ class StaffAssignTicket(generics.RetrieveUpdateAPIView):
                         pass
                 ticket.workers.set(workers)
         ticket.save()
+
+class WorkerTicketsList(generics.ListAPIView):
+    serializer_class = TicketSerializer
+    permission_classes = [IsAdminUser]
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_staff:
+            return Ticket.objects.filter(workers__contains=user.staff)
+        else:
+            return Ticket.objects.none()
 # class QRCodeScanView(APIView):
 #     def post(self, request):
 #         qr_code_path = request.data.get('qr_code')

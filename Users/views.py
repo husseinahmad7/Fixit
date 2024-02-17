@@ -255,6 +255,17 @@ class LoginView(APIView):
                     'is_staff': user.is_staff,
                     'mobile': user.mobile
                 }
+                 # Include additional staff information if the user is a staff member
+                if user.is_staff:
+                    staff_info = {
+                        'staff_id': user.staff.id,
+                        'is_supervisor': user.staff.is_supervisor,
+                        'department':user.staff.department,
+                        'salary': user.staff.salary,
+                        'availability': user.staff.availability,
+                        'services': user.staff.services
+                    }
+                    data.update(staff_info)
                 # Return the token in the response body
                 return Response(data,status=status.HTTP_200_OK)
             else:
