@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Ticket, ServiceCategory, Service, TicketPicture
 from Users.models import User
-# from Users.serializers import StaffSerializer
+from Users.serializers import UserSerializer
 
 class ServiceCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -22,7 +22,7 @@ class TicketPictureSerializer(serializers.ModelSerializer):
         fields = ['id','ticket', 'picture']
 
 class TicketSerializer(serializers.ModelSerializer):
-    client = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
+    client = UserSerializer(read_only=True)
     service = ServiceSerializer()
     class Meta:
         model = Ticket
@@ -54,7 +54,19 @@ class TicketStatusSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Client rating can only be updated when the ticket is closed.")
         return value
 
-class StaffTicketSerializer(serializers.ModelSerializer):
+
+class StaffTicketDetailsSerializer(serializers.ModelSerializer):
+    client = UserSerializer(read_only=True)
+    service = ServiceSerializer()
+    pictures = serializers.ManyRelatedField(child_relation=TicketPictureSerializer(),read_only=True)
+
+    class Meta:
+        model = Ticket
+        fields = ['id', 'client', 'description', 'service','location','info_fields', 'assigned_to', 'status', 'client_rating', 'notes','final_price', 'submission_date', 'workers','pictures']
+        read_only_fields = ['id', 'client', 'description', 'service','location','info_fields', 'assigned_to', 'status', 'client_rating','final_price', 'submission_date', 'workers','pictures']
+
+
+class StaffTicketStatusSerializer(serializers.ModelSerializer):
     # workers = serializers.StringRelatedField(read_only=True)
     class Meta:
         model = Ticket
