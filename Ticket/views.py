@@ -265,7 +265,7 @@ class WorkerTicketsList(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         if user.is_staff:
-            return Ticket.objects.filter(workers__contains=user.staff)
+            return Ticket.objects.filter(workers__contains=user.staff,status='In Progress')
         else:
             return Ticket.objects.none()
 # class QRCodeScanView(APIView):
