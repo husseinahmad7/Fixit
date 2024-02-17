@@ -45,6 +45,7 @@ class StaffSerializer(serializers.ModelSerializer):
         return instance
 
 class WorkerSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
     class Meta:
         model = Staff
         fields = ['id', 'user', 'department', 'salary', 'availability', 'services']
