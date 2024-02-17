@@ -25,7 +25,7 @@ class TicketPictureSerializer(serializers.ModelSerializer):
 
 class TicketSerializer(serializers.ModelSerializer):
     
-    client = imort_userserializer(read_only=True)
+    client = imort_userserializer()(read_only=True)
     service = ServiceSerializer()
     class Meta:
         model = Ticket
@@ -59,7 +59,7 @@ class TicketStatusSerializer(serializers.ModelSerializer):
 
 
 class StaffTicketDetailsSerializer(serializers.ModelSerializer):
-    client = imort_userserializer(read_only=True)
+    client = imort_userserializer()(read_only=True)
     service = ServiceSerializer()
     pictures = serializers.ManyRelatedField(child_relation=TicketPictureSerializer(),read_only=True)
 
