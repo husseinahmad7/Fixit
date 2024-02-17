@@ -47,7 +47,7 @@ class StaffSerializer(serializers.ModelSerializer):
 class WorkerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Staff
-        fields = ['id', 'user','email', 'department', 'salary', 'availability', 'services']
+        fields = ['id', 'user', 'department', 'salary', 'availability', 'services']
 # class StaffCSerializer(serializers.ModelSerializer):
 #     # user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 #     username = serializers.CharField()
