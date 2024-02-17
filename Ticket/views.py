@@ -181,7 +181,7 @@ class MarkAsPaidView(generics.UpdateAPIView):
     def update(self, request, *args, **kwargs):
         ticket = self.get_object()
         
-        if request.user.is_staff:
+        if request.user.is_staff and ticket.assigned_to == request.user.staff :
             ticket.status = 'In Progress'
             ticket.save()
             return self.partial_update(request, *args, **kwargs)

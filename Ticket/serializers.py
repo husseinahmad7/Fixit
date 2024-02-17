@@ -1,6 +1,9 @@
 from rest_framework import serializers
 from .models import Ticket, ServiceCategory, Service, TicketPicture
 from Users.models import User
+def imort_userserializer():
+    from Users.serializers import UserSerializer
+    return UserSerializer
 
 class ServiceCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,9 +24,8 @@ class TicketPictureSerializer(serializers.ModelSerializer):
         fields = ['id','ticket', 'picture']
 
 class TicketSerializer(serializers.ModelSerializer):
-    from Users.serializers import UserSerializer
-
-    client = UserSerializer(read_only=True)
+    
+    client = imort_userserializer(read_only=True)
     service = ServiceSerializer()
     class Meta:
         model = Ticket
@@ -57,9 +59,7 @@ class TicketStatusSerializer(serializers.ModelSerializer):
 
 
 class StaffTicketDetailsSerializer(serializers.ModelSerializer):
-    from Users.serializers import UserSerializer
-
-    client = UserSerializer(read_only=True)
+    client = imort_userserializer(read_only=True)
     service = ServiceSerializer()
     pictures = serializers.ManyRelatedField(child_relation=TicketPictureSerializer(),read_only=True)
 
