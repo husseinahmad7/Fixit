@@ -259,13 +259,15 @@ class StaffAssignTicket(generics.RetrieveUpdateAPIView):
             staff = Staff.objects.get(user=user)
         except:
             raise Staff.DoesNotExist
-        if ticket.assigned_to != staff:
-            ticket.assigned_to = staff
+        
 
         # Check if the ticket service is in the staff services
         if ticket.service not in staff.services.all():
             return Response({"detail": "Not allowed. The Ticket Service is not in staff services."},
                             status=status.HTTP_403_FORBIDDEN)
+        if ticket.assigned_to != staff:
+            ticket.assigned_to = staff
+        ticket.status = 'Pending Approval'
         
         if staff.is_supervisor:
             workers_data = self.request.data.get('workers', None)
