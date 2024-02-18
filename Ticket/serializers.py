@@ -74,7 +74,7 @@ class TicketClosingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = ['status','notes']
-        read_only_fields = ['status']
+        # read_only_fields = ['status']
 
     def validate_status(self, value):
         ticket = self.instance
