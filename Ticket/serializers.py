@@ -36,7 +36,8 @@ class TicketSerializer(serializers.ModelSerializer):
             
         }
         # Serialize detailed information about each worker
-        workers_info = [{'id': worker.id,'user_id':worker.user.id, 'full_name': worker.user.full_name,'email':worker.user.email,'mobile':worker.user.mobile,'department':worker.department,'salary':worker.salary,'availability':worker.availability,'services':worker.services.all()} for worker in instance.workers.all()]
+        workers_info = [{'id': worker.id,'user_id':worker.user.id, 'full_name': worker.user.full_name,'email':worker.user.email,'mobile':worker.user.mobile,'department':worker.department,'salary':worker.salary,'availability':worker.availability,'services':ServiceSerializer(worker.services.all(),many=True).data} for worker in instance.workers.all()]
+        
         # Combine the client info with other serialized fields
         representation = super().to_representation(instance)
         representation.update(client_info)
@@ -89,7 +90,7 @@ class StaffTicketDetailsSerializer(serializers.ModelSerializer):
             'mobile': client.mobile,
             
         }
-        workers_info = [{'id': worker.id,'user_id':worker.user.id, 'full_name': worker.user.full_name,'email':worker.user.email,'mobile':worker.user.mobile,'department':worker.department,'salary':worker.salary,'availability':worker.availability,'services':worker.services.all()} for worker in instance.workers.all()]
+        workers_info = [{'id': worker.id,'user_id':worker.user.id, 'full_name': worker.user.full_name,'email':worker.user.email,'mobile':worker.user.mobile,'department':worker.department,'salary':worker.salary,'availability':worker.availability,'services':ServiceSerializer(worker.services.all(),many=True).data} for worker in instance.workers.all()]
 
         # Combine the client info with other serialized fields
         representation = super().to_representation(instance)
