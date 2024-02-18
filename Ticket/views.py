@@ -224,12 +224,12 @@ class StaffAssignTicket(generics.RetrieveUpdateAPIView):
     serializer_class = StaffTicketStatusSerializer
     permission_classes = [IsAdminUser]
 
-    # def get_queryset(self):
-    #     user = self.request.user
-    #     if user.is_staff:
-    #         return Ticket.objects.filter(service__in=user.staff.services.all())
-    #     else:
-    #         return Ticket.objects.none()
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_staff:
+            return Ticket.objects.filter(service__in=user.staff.services.all())
+        else:
+            return Ticket.objects.none()
     
     def perform_update(self, serializer):
         ticket = serializer.save()
