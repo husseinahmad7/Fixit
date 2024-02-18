@@ -225,8 +225,9 @@ class StaffAssignedTicketsList(generics.ListAPIView):
     permission_classes = [IsAdminUser]
     def get_queryset(self):
         user = self.request.user
+        status_param = self.request.query_params.get('status')
         if user.is_staff:
-            return Ticket.objects.filter(assigned_to=user.staff)
+            return Ticket.objects.filter(assigned_to=user.staff,status=status_param)
         else:
             return Ticket.objects.none()
         
