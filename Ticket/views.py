@@ -126,10 +126,14 @@ class TicketPictureDetail(generics.RetrieveUpdateDestroyAPIView):
 # update status
     
 class ClientRejectView(generics.UpdateAPIView):
-    # queryset = Ticket.objects.all()
+    
     serializer_class = TicketStatusSerializer
     permission_classes = [TicketOwnerPermission]
-
+    
+    def get_queryset(self):
+        user = self.request.user
+        return Ticket.objects.filter(client=user)
+    
     def update(self, request, *args, **kwargs):
         # ticket_id = self.kwargs['pk']
         ticket = self.get_object()
@@ -143,9 +147,13 @@ class ClientRejectView(generics.UpdateAPIView):
             return Response({'error': 'Action is not allowed.'}, status=status.HTTP_403_FORBIDDEN)
         
 class ClientAcceptView(generics.UpdateAPIView):
-    # queryset = Ticket.objects.all()
     serializer_class = TicketStatusSerializer
     permission_classes = [TicketOwnerPermission]
+    
+    def get_queryset(self):
+        user = self.request.user
+        return Ticket.objects.filter(client=user)
+    
 
     def update(self, request, *args, **kwargs):
         ticket = self.get_object()
@@ -160,9 +168,13 @@ class ClientAcceptView(generics.UpdateAPIView):
 
         
 class ClientRateView(generics.UpdateAPIView):
-    # queryset = Ticket.objects.all()
     serializer_class = TicketStatusSerializer
     permission_classes = [TicketOwnerPermission]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Ticket.objects.filter(client=user)
+    
 
     def update(self, request, *args, **kwargs):
         ticket = self.get_object()
@@ -178,6 +190,15 @@ class MarkAsPaidView(generics.UpdateAPIView):
     serializer_class = TicketStatusSerializer
     permission_classes = [IsAdminUser]
 
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_staff:
+            return Ticket.objects.filter(service__in=user.staff.services.all())
+        else:
+            return Ticket.objects.none()
+        
+    
     def update(self, request, *args, **kwargs):
         ticket = self.get_object()
         
