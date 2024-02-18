@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticatedOrReadOnly,IsAuthenticated
 from .models import Ticket, Service, ServiceCategory, TicketPicture
-from .serializers import TicketSerializer, ServiceSerializer, ServiceCategorySerializer, TicketCreationSerializer,TicketPictureSerializer,TicketStatusSerializer,StaffTicketDetailsSerializer, StaffTicketStatusSerializer
+from .serializers import TicketSerializer, ServiceSerializer, ServiceCategorySerializer, TicketCreationSerializer,TicketPictureSerializer,TicketStatusSerializer,StaffTicketDetailsSerializer, StaffTicketStatusSerializer,TicketClosingSerializer
 from Users.models import Staff
 # from rest_framework.parsers import MultiPartParser, FormParser
 from .permissions import OwnerOrAdminPermission,TicketPictureOwnerOrAdminPermission,TicketOwnerPermission
@@ -209,6 +209,28 @@ class MarkAsPaidView(generics.UpdateAPIView):
         else:
             return Response({'error': 'Action is not allowed.'}, status=status.HTTP_403_FORBIDDEN)
 
+class MarkAsClosedView(generics.UpdateAPIView):
+    serializer_class = TicketClosingSerializer
+    permission_classes = [IsAdminUser]
+
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_staff:
+            return Ticket.objects.filter(service__in=user.staff.services.all())
+        else:
+            return Ticket.objects.none()
+        
+    
+    # def update(self, request, *args, **kwargs):
+    #     ticket = self.get_object()
+        
+    #     if request.user.is_staff and ticket.assigned_to == request.user.staff :
+    #         ticket.status = 'Closed'
+    #         ticket.save()
+    #         return Response({'message': 'Ticket marked as closed successfully'}, status=status.HTTP_200_OK)
+    #     else:
+    #         return Response({'error': 'Action is not allowed.'}, status=status.HTTP_403_FORBIDDEN)
 class StaffAvailableTicketsList(generics.ListAPIView):
     serializer_class = TicketSerializer
     permission_classes = [IsAdminUser]
