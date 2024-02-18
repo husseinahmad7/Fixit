@@ -227,7 +227,7 @@ class MarkAsClosedView(generics.UpdateAPIView):
         
         if request.user.is_staff and ticket.assigned_to == request.user.staff :
             if ticket.status != 'In Progress':
-                return Response("Closing the ticket can only be done after the ticket is in progress.", status=status.HTTP_406_NOT_ACCEPTABLE)
+                return Response({"message":"Closing the ticket can only be done after the ticket is in progress."}, status=status.HTTP_406_NOT_ACCEPTABLE)
             ticket.status = 'Closed'
             ticket.save()
             return Response({'message': 'Ticket marked as closed successfully'}, status=status.HTTP_200_OK)
