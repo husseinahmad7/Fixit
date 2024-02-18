@@ -222,15 +222,17 @@ class MarkAsClosedView(generics.UpdateAPIView):
             return Ticket.objects.none()
         
     
-    # def update(self, request, *args, **kwargs):
-    #     ticket = self.get_object()
+    def update(self, request, *args, **kwargs):
+        ticket = self.get_object()
         
-    #     if request.user.is_staff and ticket.assigned_to == request.user.staff :
-    #         ticket.status = 'Closed'
-    #         ticket.save()
-    #         return Response({'message': 'Ticket marked as closed successfully'}, status=status.HTTP_200_OK)
-    #     else:
-    #         return Response({'error': 'Action is not allowed.'}, status=status.HTTP_403_FORBIDDEN)
+        if request.user.is_staff and ticket.assigned_to == request.user.staff :
+            if ticket.status != 'In Progress':
+                return Response("Closing the ticket can only be done after the ticket is in progress.", status=status.HTTP_406_NOT_ACCEPTABLE)
+            ticket.status = 'Closed'
+            ticket.save()
+            return Response({'message': 'Ticket marked as closed successfully'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Action is not allowed.'}, status=status.HTTP_403_FORBIDDEN)
 class StaffAvailableTicketsList(generics.ListAPIView):
     serializer_class = TicketSerializer
     permission_classes = [IsAdminUser]

@@ -74,13 +74,8 @@ class TicketClosingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = ['status','notes']
-        # read_only_fields = ['status']
+        read_only_fields = ['status']
 
-    def validate_status(self, value):
-        ticket = self.instance
-        if ticket.status != 'In Progress':
-            raise serializers.ValidationError("Closing the ticket can only be done after the ticket is in progress.")
-        return 'Closed'
 
 class StaffTicketDetailsSerializer(serializers.ModelSerializer):
     
