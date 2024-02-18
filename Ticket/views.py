@@ -226,8 +226,11 @@ class StaffAssignedTicketsList(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         status_param = self.request.query_params.get('status')
-        if user.is_staff:
+        if user.is_staff and status_param is not None:
+
             return Ticket.objects.filter(assigned_to=user.staff,status=status_param)
+        elif user.is_staff and status_param is None:
+            return Ticket.objects.filter(assigned_to=user.staff)
         else:
             return Ticket.objects.none()
         
