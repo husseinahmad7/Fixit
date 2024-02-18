@@ -209,13 +209,13 @@ class MarkAsPaidView(generics.UpdateAPIView):
         else:
             return Response({'error': 'Action is not allowed.'}, status=status.HTTP_403_FORBIDDEN)
 
-class StaffTicketsList(generics.ListAPIView):
+class StaffAvailableTicketsList(generics.ListAPIView):
     serializer_class = TicketSerializer
     permission_classes = [IsAdminUser]
     def get_queryset(self):
         user = self.request.user
         if user.is_staff:
-            return Ticket.objects.filter(service__in=user.staff.services.all())
+            return Ticket.objects.filter(assigned_to__isnull=True,service__in=user.staff.services.all())
         else:
             return Ticket.objects.none()
 
