@@ -142,7 +142,7 @@ class ClientRejectView(generics.UpdateAPIView):
         if ticket.client == request.user:
             ticket.status = 'Client Rejected'
             ticket.save()
-            return self.partial_update(request, *args, **kwargs)
+            return Response({'message': 'Ticket Rejected successfully'}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Action is not allowed.'}, status=status.HTTP_403_FORBIDDEN)
         
@@ -161,7 +161,7 @@ class ClientAcceptView(generics.UpdateAPIView):
         if ticket.client == request.user:
             ticket.status = 'Pending Payment'
             ticket.save()
-            return self.partial_update(request, *args, **kwargs)
+            return Response({'message': 'Ticket Accepted successfully'}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Action is not allowed.'}, status=status.HTTP_403_FORBIDDEN)
         
@@ -182,7 +182,7 @@ class ClientRateView(generics.UpdateAPIView):
         if ticket.client == request.user:
             ticket.client_rating = rating
             ticket.save()
-            return self.partial_update(request, *args, **kwargs)
+            return Response({'message': 'Ticket Rated successfully'}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Action is not allowed.'}, status=status.HTTP_403_FORBIDDEN)
 
@@ -205,7 +205,7 @@ class MarkAsPaidView(generics.UpdateAPIView):
         if request.user.is_staff and ticket.assigned_to == request.user.staff :
             ticket.status = 'In Progress'
             ticket.save()
-            return self.partial_update(request, *args, **kwargs)
+            return Response({'message': 'Ticket marked as paid successfully'}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Action is not allowed.'}, status=status.HTTP_403_FORBIDDEN)
 
