@@ -1,9 +1,6 @@
 from rest_framework import serializers
 from .models import Ticket, ServiceCategory, Service, TicketPicture
 from Users.models import User
-def imort_userserializer():
-    from Users.serializers import UserSerializer
-    return UserSerializer
 
 class ServiceCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -38,10 +35,12 @@ class TicketSerializer(serializers.ModelSerializer):
             'mobile': client.mobile,
             
         }
-
+        # Serialize detailed information about each worker
+        workers_info = [{'id': worker.id,'user_id':worker.user.id, 'full_name': worker.user.full_name,'email':worker.user.email,'mobile':worker.user.mobile,'department':worker.department,'salary':worker.salary,'availability':worker.availability,'services':worker.services.all()} for worker in instance.workers.all()]
         # Combine the client info with other serialized fields
         representation = super().to_representation(instance)
         representation.update(client_info)
+        representation['workers'] = workers_info
         return representation
 
 class  TicketCreationSerializer(serializers.ModelSerializer):
@@ -90,10 +89,12 @@ class StaffTicketDetailsSerializer(serializers.ModelSerializer):
             'mobile': client.mobile,
             
         }
+        workers_info = [{'id': worker.id,'user_id':worker.user.id, 'full_name': worker.user.full_name,'email':worker.user.email,'mobile':worker.user.mobile,'department':worker.department,'salary':worker.salary,'availability':worker.availability,'services':worker.services.all()} for worker in instance.workers.all()]
 
         # Combine the client info with other serialized fields
         representation = super().to_representation(instance)
         representation.update(client_info)
+        representation['workers'] = workers_info
         return representation
 
 class StaffTicketStatusSerializer(serializers.ModelSerializer):
