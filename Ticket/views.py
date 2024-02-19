@@ -263,7 +263,7 @@ class StaffAvailableTicketsList(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         if user.is_staff:
-            return Ticket.objects.filter(assigned_to__isnull=True,service__in=user.staff.services.all())
+            return Ticket.objects.filter(assigned_to__isnull=True,service__in=user.staff.services.all(),status__ne='Rejected')
         else:
             return Ticket.objects.none()
 
