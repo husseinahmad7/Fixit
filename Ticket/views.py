@@ -180,6 +180,7 @@ class ClientRateView(generics.UpdateAPIView):
         ticket = self.get_object()
         rating = request.data.get('client_rating')
         if ticket.client == request.user:
+            ticket.status = 'Rated'
             ticket.client_rating = rating
             ticket.save()
             return Response({'message': 'Ticket Rated successfully'}, status=status.HTTP_200_OK)

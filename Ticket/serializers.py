@@ -68,6 +68,8 @@ class TicketStatusSerializer(serializers.ModelSerializer):
         ticket = self.instance
         if ticket.status != 'Closed' and value is not None:
             raise serializers.ValidationError("Client rating can only be updated when the ticket is closed.")
+        if value is not None and (value < 1 or value > 5):
+            raise serializers.ValidationError("Client rating must be between 1 and 5.")
         return value
 
 class TicketClosingSerializer(serializers.ModelSerializer):
