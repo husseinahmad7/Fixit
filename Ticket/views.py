@@ -187,6 +187,29 @@ class ClientRateView(generics.UpdateAPIView):
         else:
             return Response({'error': 'Action is not allowed.'}, status=status.HTTP_403_FORBIDDEN)
 
+class StaffRejectTicketView(generics.UpdateAPIView):
+    serializer_class = TicketStatusSerializer
+    permission_classes = [IsAdminUser]
+
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_staff:
+            return Ticket.objects.filter(service__in=user.staff.services.all())
+        else:
+            return Ticket.objects.none()
+        
+    
+    def update(self, request, *args, **kwargs):
+        ticket = self.get_object()
+        
+        if request.user.is_staff:
+            ticket.status = 'Rejected'
+            ticket.save()
+            return Response({'message': 'Ticket Rejected successfully'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Action is not allowed.'}, status=status.HTTP_403_FORBIDDEN)
+
 class MarkAsPaidView(generics.UpdateAPIView):
     serializer_class = TicketStatusSerializer
     permission_classes = [IsAdminUser]

@@ -29,7 +29,7 @@ class TicketPictureOwnerOrAdminPermission(BasePermission):
 
 class TicketOwnerPermission(BasePermission):
     """
-    Custom permission to allow only clients to access tickets.
+    Custom permission to allow only the ticket client to access tickets.
     """
 
     def has_object_permission(self, request, view, obj):
