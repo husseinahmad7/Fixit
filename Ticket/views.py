@@ -204,6 +204,8 @@ class StaffRejectTicketView(generics.UpdateAPIView):
         ticket = self.get_object()
         
         if request.user.is_staff:
+            staff = request.user.staff
+            ticket.assigned_to = staff
             ticket.status = 'Rejected'
             ticket.save()
             return Response({'message': 'Ticket Rejected successfully'}, status=status.HTTP_200_OK)
