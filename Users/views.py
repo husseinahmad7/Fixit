@@ -5,7 +5,7 @@ from django.utils.decorators import method_decorator
 # from django.views.generic import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework import generics
 from rest_framework.generics import GenericAPIView
-from .serializers import UserSerializer,StaffSerializer ,WorkerSerializer ,UserRegistrationSerializer, PasswordChangeSerializer, PasswordResetConfirmSerializer, PasswordResetSerializer
+from .serializers import UserSerializer,UserUpdateSerializer,StaffSerializer ,WorkerSerializer ,UserRegistrationSerializer, PasswordChangeSerializer, PasswordResetConfirmSerializer, PasswordResetSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -52,7 +52,7 @@ class UsersRetrieveDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
 
     
 class UserRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
-    serializer_class = UserSerializer
+    serializer_class = UserUpdateSerializer
     queryset = User.objects.all()
     permission_classes = [IsUserOrReadOnly]
 

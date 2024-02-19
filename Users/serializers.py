@@ -19,7 +19,14 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id','email', 'full_name','is_staff', 'mobile']
         read_only_fields = ['is_staff']
-        
+
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['email', 'full_name','is_staff', 'mobile']
+        read_only_fields = ['email','is_staff']
+
 class StaffSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.filter(is_staff=True))
     
