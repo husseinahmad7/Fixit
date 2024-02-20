@@ -11,6 +11,8 @@ from .serializers import TicketSerializer, ServiceSerializer, ServiceCategorySer
 from Users.models import Staff
 # from rest_framework.parsers import MultiPartParser, FormParser
 from .permissions import OwnerOrAdminPermission,TicketPictureOwnerOrAdminPermission,TicketOwnerPermission
+from django.db.models import Avg
+
 # reading categories
 class ServiceCategoryList(generics.ListAPIView):
     queryset = ServiceCategory.objects.all()
@@ -62,6 +64,17 @@ class ServiceListByCategory(generics.ListAPIView):
         else:
             # Return all services if no category ID is provided
             return Service.objects.all()
+
+class ServiceListByRating(generics.ListAPIView):
+    queryset = Service.objects.all()
+    serializer_class = ServiceSerializer
+
+    def get_queryset(self):
+        # Calculate average rating for each service
+        services = self.queryset.annotate(average_rating=Avg('tickets__client_rating'))
+        # Exclude services with no ratings
+        return services.exclude(average_rating__isnull=True).order_by('-average_rating')
+
 # Ticket
 class TicketCreate(generics.CreateAPIView):
     """

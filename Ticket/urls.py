@@ -1,10 +1,11 @@
 from django.urls import path
-from .views import ServiceCategoryList,ServiceCategoryCreate,ServiceCategoryDetail,ServiceList,ServiceCreate,ServiceDetail,ServiceRetrieve,ServiceListByCategory,TicketCreate,ClientTicketsList,TicketDetail,TicketPictureCreateView,TicketPictureDetail,ClientRejectView,ClientAcceptView,StaffRejectTicketView,MarkAsPaidView,MarkAsClosedView,ClientRateView, StaffAvailableTicketsList,StaffAssignedTicketsList, StaffTicketDetailsView,StaffAssignTicket,WorkerTicketsList
+from .views import ServiceCategoryList,ServiceCategoryCreate,ServiceCategoryDetail,ServiceList,ServiceListByRating,ServiceCreate,ServiceDetail,ServiceRetrieve,ServiceListByCategory,TicketCreate,ClientTicketsList,TicketDetail,TicketPictureCreateView,TicketPictureDetail,ClientRejectView,ClientAcceptView,StaffRejectTicketView,MarkAsPaidView,MarkAsClosedView,ClientRateView, StaffAvailableTicketsList,StaffAssignedTicketsList, StaffTicketDetailsView,StaffAssignTicket,WorkerTicketsList
 urlpatterns = [
     path('service/cat/list',ServiceCategoryList.as_view()),
     path('service/cat/create',ServiceCategoryCreate.as_view()),
     path('service/cat/<int:pk>',ServiceCategoryDetail.as_view()),
     path('service/list',ServiceList.as_view()),
+    path('service/listbyrate',ServiceListByRating.as_view()),
     path('service/create',ServiceCreate.as_view()),
     path('service/<int:pk>',ServiceDetail.as_view()),
     path('service/show/<int:pk>',ServiceRetrieve.as_view()),

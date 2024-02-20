@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Ticket, ServiceCategory, Service, TicketPicture
 from Users.models import User
+from django.db.models import Avg
 
 class ServiceCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,9 +11,14 @@ class ServiceCategorySerializer(serializers.ModelSerializer):
 
 class ServiceSerializer(serializers.ModelSerializer):
     service_category = serializers.PrimaryKeyRelatedField(queryset=ServiceCategory.objects.all())
+    average_rating = serializers.SerializerMethodField()
     class Meta:
         model = Service
-        fields = ['id', 'title', 'description', 'initial_price', 'service_category','picture','type','is_final_price']
+        fields = ['id', 'title', 'description', 'initial_price', 'service_category','picture','type','is_final_price','average_rating']
+    
+    def get_average_rating(self, obj):
+        # Calculate the average rating for the service
+        return obj.tickets.aggregate(Avg('client_rating')).get('client_rating__avg', None)
 
 class TicketPictureSerializer(serializers.ModelSerializer):
     ticket = serializers.PrimaryKeyRelatedField(read_only=True)
