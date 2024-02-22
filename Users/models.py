@@ -34,6 +34,7 @@ class User(AbstractUser):
     email = models.EmailField("Email address", unique=True)
     full_name = models.CharField("Full name",max_length=30)
     mobile = models.CharField("Mobile",max_length=20,blank=True,null=True)
+    # device_reg_id = models.CharField(max_length=255, blank=True, null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['full_name', 'mobile']
@@ -60,7 +61,7 @@ class Staff(models.Model):
     department = models.CharField(max_length=100)
     salary = models.DecimalField(max_digits=10, decimal_places=2,default=0.)
     availability = models.BooleanField(default= True)
-    services = models.ManyToManyField('Ticket.Service', blank=True)
+    services = models.ManyToManyField('Ticket.Service',related_name='staffs', blank=True)
     is_supervisor = models.BooleanField(default= False)
 
     def get_absolute_url(self):

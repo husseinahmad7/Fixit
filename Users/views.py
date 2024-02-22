@@ -239,11 +239,12 @@ class LoginView(APIView):
         # Get the email and password from the request body
         email = request.data.get('email')
         password = request.data.get('password')
-
+        # device_reg_id = request.data.get('device_reg_id')
         # Authenticate the user
         user = authenticate(request=request, email=email, password=password)
         if user is not None:
             if user.is_active:
+                # user.device_reg_id = device_reg_id
                 # Generate a token for the user
                 token,created = Token.objects.get_or_create(user=user)
                 data = {
@@ -285,14 +286,15 @@ class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request):
         # Get the user's token
+        user = self.request.user
 
         token = self.request.user.auth_token
         # Check if the token exists
         if token is not None:
             # Delete the user's token
             token.delete()
-        
-
+        # if user.device_reg_id is not None:
+        #     user.device_reg_id = None
         # Return a success response
         return Response({'success': 'User logged out successfully.'})
 

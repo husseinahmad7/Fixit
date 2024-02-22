@@ -13,6 +13,20 @@ from Users.models import Staff
 from .permissions import OwnerOrAdminPermission,TicketPictureOwnerOrAdminPermission,TicketOwnerPermission
 from django.db.models import Avg
 
+
+
+
+def generate_payment_code(length=8):
+    import secrets
+    import string
+    # Define the characters to use for the payment code
+    characters = string.ascii_letters + string.digits
+
+    # Generate a random payment code of the specified length
+    payment_code = ''.join(secrets.choice(characters) for _ in range(length))
+    return payment_code
+
+
 # reading categories
 class ServiceCategoryList(generics.ListAPIView):
     queryset = ServiceCategory.objects.all()
@@ -172,6 +186,7 @@ class ClientAcceptView(generics.UpdateAPIView):
         ticket = self.get_object()
 
         if ticket.client == request.user:
+            ticket.paycode = generate_payment_code()
             ticket.status = 'Pending Payment'
             ticket.save()
             return Response({'message': 'Ticket Accepted successfully'}, status=status.HTTP_200_OK)
@@ -240,8 +255,8 @@ class MarkAsPaidView(generics.UpdateAPIView):
     
     def update(self, request, *args, **kwargs):
         ticket = self.get_object()
-        
-        if request.user.is_staff and ticket.assigned_to == request.user.staff :
+        sent_paycode = request.data.get('paycode')
+        if request.user.is_staff and ticket.assigned_to == request.user.staff and sent_paycode == ticket.paycode:
             ticket.status = 'In Progress'
             ticket.save()
             return Response({'message': 'Ticket marked as paid successfully'}, status=status.HTTP_200_OK)

@@ -88,20 +88,17 @@ WSGI_APPLICATION = 'Fixit.wsgi.application'
 
 
 
-# DB_NAME = "Fixit"
-# DB_USER = "postgres"
-# DB_PASSWORD = "ST.Outis.79.C"
 # DATABASES = {
 #     'default': {
 #     'ENGINE': 'django.db.backends.postgresql',
-#     'NAME': DB_NAME,
-#     'USER': DB_USER,
-#     'PASSWORD': DB_PASSWORD,
+#     'NAME': env('DB_NAME'),
+#     'USER': env('DB_USER'),
+#     'PASSWORD': env('DB_PASSWORD'),
 #     'HOST': 'localhost',
 #     'PORT': '5432'
 # }}
 
-print(env('DB_URL'))
+# print(env('DB_URL'))
 DATABASES = {
 'default':dj_database_url.parse(env('DB_URL'),ssl_require=True)
 }
