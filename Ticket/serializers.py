@@ -94,8 +94,8 @@ class StaffTicketDetailsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ticket
-        fields = ['id', 'description', 'service','location','info_fields', 'assigned_to', 'status', 'client_rating', 'notes','final_price', 'submission_date', 'workers','pictures','paycode']
-        read_only_fields = ['id', 'client', 'description', 'service','location','info_fields', 'assigned_to', 'status', 'client_rating','final_price', 'submission_date', 'workers','pictures','paycode']
+        fields = ['id', 'description', 'service','location','info_fields', 'assigned_to', 'status', 'client_rating', 'notes','final_price', 'submission_date', 'workers','pictures']
+        read_only_fields = ['id', 'client', 'description', 'service','location','info_fields', 'assigned_to', 'status', 'client_rating','final_price', 'submission_date', 'workers','pictures']
     def to_representation(self, instance):
         # Fetch the client details
         client = instance.client
