@@ -56,7 +56,8 @@ class  TicketCreationSerializer(serializers.ModelSerializer):
     pictures = serializers.ManyRelatedField(child_relation=TicketPictureSerializer(),read_only=True)
     class Meta:
         model = Ticket
-        fields = ['client', 'description', 'service','location','info_fields','status','client_rating', 'pictures']
+        fields = ['client', 'description', 'service','location','info_fields','status','client_rating', 'pictures','paycode']
+        read_only_fields = ['paycode']
     def get_status(self, obj):
         return obj.status
     def validate_client_rating(self, value):
@@ -68,7 +69,8 @@ class  TicketCreationSerializer(serializers.ModelSerializer):
 class TicketStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
-        fields = ['client','status','client_rating']
+        fields = ['client','status','client_rating','paycode']
+        read_only_fields = ['paycode']
 
     def validate_client_rating(self, value):
         ticket = self.instance
@@ -92,8 +94,8 @@ class StaffTicketDetailsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ticket
-        fields = ['id', 'description', 'service','location','info_fields', 'assigned_to', 'status', 'client_rating', 'notes','final_price', 'submission_date', 'workers','pictures']
-        read_only_fields = ['id', 'client', 'description', 'service','location','info_fields', 'assigned_to', 'status', 'client_rating','final_price', 'submission_date', 'workers','pictures']
+        fields = ['id', 'description', 'service','location','info_fields', 'assigned_to', 'status', 'client_rating', 'notes','final_price', 'submission_date', 'workers','pictures','paycode']
+        read_only_fields = ['id', 'client', 'description', 'service','location','info_fields', 'assigned_to', 'status', 'client_rating','final_price', 'submission_date', 'workers','pictures','paycode']
     def to_representation(self, instance):
         # Fetch the client details
         client = instance.client
