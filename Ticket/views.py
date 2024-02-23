@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticatedOrReadOnly,IsAuthenticated
 from .models import Ticket, Service, ServiceCategory, TicketPicture
-from .serializers import TicketSerializer, ServiceSerializer, ServiceCategorySerializer, TicketCreationSerializer,TicketPictureSerializer,TicketStatusSerializer,StaffTicketDetailsSerializer, StaffTicketStatusSerializer,TicketClosingSerializer
+from .serializers import TicketSerializer, ServiceSerializer, ServiceCategorySerializer,TicketClientDetailSerializer, TicketCreationSerializer,TicketPictureSerializer,TicketStatusSerializer,StaffTicketDetailsSerializer, StaffTicketStatusSerializer,TicketClosingSerializer
 from Users.models import Staff
 # from rest_framework.parsers import MultiPartParser, FormParser
 from .permissions import OwnerOrAdminPermission,TicketPictureOwnerOrAdminPermission,TicketOwnerPermission
@@ -126,10 +126,16 @@ class ClientTicketsList(generics.ListAPIView):
 
         return queryset
     
-
+# to update
 class TicketDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Ticket.objects.all()
     serializer_class = TicketCreationSerializer
+    permission_classes = [OwnerOrAdminPermission]
+
+# to view
+class TicketClientDetail(generics.RetrieveAPIView):
+    queryset = Ticket.objects.all()
+    serializer_class = TicketClientDetailSerializer
     permission_classes = [OwnerOrAdminPermission]
 
 class TicketPictureCreateView(generics.CreateAPIView):

@@ -49,6 +49,30 @@ class TicketSerializer(serializers.ModelSerializer):
         representation.update(client_info)
         representation['workers'] = workers_info
         return representation
+    
+class TicketClientDetailSerializer(serializers.ModelSerializer):
+    service = ServiceSerializer()
+    class Meta:
+        model = Ticket
+        fields = ['id', 'description', 'service','location','info_fields', 'assigned_to', 'status', 'client_rating', 'notes','final_price', 'submission_date', 'workers','paycode']
+    def to_representation(self, instance):
+        # Fetch the client details
+        client = instance.client
+        client_info = {
+            'client_id': client.id,
+            'email': client.email,
+            'full_name': client.full_name,
+            'mobile': client.mobile,
+            
+        }
+        # Serialize detailed information about each worker
+        workers_info = [{'id': worker.id,'user_id':worker.user.id, 'full_name': worker.user.full_name,'email':worker.user.email,'mobile':worker.user.mobile,'department':worker.department,'salary':worker.salary,'availability':worker.availability,'services':ServiceSerializer(worker.services.all(),many=True).data} for worker in instance.workers.all()]
+        
+        # Combine the client info with other serialized fields
+        representation = super().to_representation(instance)
+        representation.update(client_info)
+        representation['workers'] = workers_info
+        return representation
 
 class  TicketCreationSerializer(serializers.ModelSerializer):
     client = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), default=serializers.CurrentUserDefault())

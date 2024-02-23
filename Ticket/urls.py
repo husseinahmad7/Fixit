@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ServiceCategoryList,ServiceCategoryCreate,ServiceCategoryDetail,ServiceList,ServiceListByRating,ServiceCreate,ServiceDetail,ServiceRetrieve,ServiceListByCategory,TicketCreate,ClientTicketsList,TicketDetail,TicketPictureCreateView,TicketPictureDetail,ClientRejectView,ClientAcceptView,StaffRejectTicketView,MarkAsPaidView,MarkAsClosedView,ClientRateView, StaffAvailableTicketsList,StaffAssignedTicketsList, StaffTicketDetailsView,StaffAssignTicket,WorkerTicketsList
+from .views import ServiceCategoryList,ServiceCategoryCreate,ServiceCategoryDetail,ServiceList,ServiceListByRating,ServiceCreate,ServiceDetail,ServiceRetrieve,ServiceListByCategory,TicketCreate,ClientTicketsList,TicketDetail,TicketClientDetail,TicketPictureCreateView,TicketPictureDetail,ClientRejectView,ClientAcceptView,StaffRejectTicketView,MarkAsPaidView,MarkAsClosedView,ClientRateView, StaffAvailableTicketsList,StaffAssignedTicketsList, StaffTicketDetailsView,StaffAssignTicket,WorkerTicketsList
 urlpatterns = [
     path('service/cat/list',ServiceCategoryList.as_view()),
     path('service/cat/create',ServiceCategoryCreate.as_view()),
@@ -13,6 +13,7 @@ urlpatterns = [
     path('create/',TicketCreate.as_view()),
     path('list/',ClientTicketsList.as_view()),
     path('client_update/<int:pk>/',TicketDetail.as_view()),
+    path('client_view/<int:pk>/',TicketClientDetail.as_view()),
     path('client_update/<int:pk>/add_pic',TicketPictureCreateView.as_view()),
     path('ticketpicture/<int:pk>/',TicketPictureDetail.as_view()),
     path('staff_ticket_details/<int:pk>',StaffTicketDetailsView.as_view()),
