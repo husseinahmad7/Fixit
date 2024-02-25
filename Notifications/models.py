@@ -1,7 +1,7 @@
 from django.db import models
 
 class Notification(models.Model):
-    NOTIFICATION_TYPE = ((1,'new ticket'),(2,'staff assign ticket'), (3,'client reject'), (4,'client accept'),(5,'paid ticket'))
+    NOTIFICATION_TYPE = ((1,'new ticket'),(2,'staff assign ticket'), (3,'client reject'), (4,'client accept'),(5,'paid ticket'),(6,'ticket rejected'))
     
     ticket = models.ForeignKey('Ticket.Ticket',on_delete=models.CASCADE, blank=True, null=True)
     user = models.ForeignKey('Users.User', on_delete=models.CASCADE)
@@ -23,6 +23,7 @@ class Notification(models.Model):
 
             case 5:
                 return ('Ticket paid',f'The Ticket has been paid')
-
+            case 6:
+                return ('Ticket rejected',f'The Ticket has been rejected')
             case _:
                 return (f'',f'')
