@@ -42,7 +42,7 @@ def new_ticket(sender, instance,created, **kwargs):
             raise e
 
 @receiver(pre_save,sender=Ticket)
-def staff_assign_ticket(sender, instance,created, **kwargs):
+def staff_assign_ticket(sender, instance, **kwargs):
     old_ticket = Ticket.objects.get(pk=instance.pk)
     if old_ticket.assigned_to is None and instance.assigned_to is not None:
         if instance.client.device_reg_id:
@@ -57,7 +57,7 @@ def staff_assign_ticket(sender, instance,created, **kwargs):
             )
 
 @receiver(pre_save,sender=Ticket)
-def client_reject_ticket(sender, instance,created, **kwargs):
+def client_reject_ticket(sender, instance, **kwargs):
     old_ticket = Ticket.objects.get(pk=instance.pk)
     if old_ticket.status == 'Pending Approval' and instance.status == 'Client Rejected':
         if instance.assigned_to.user.device_reg_id:
@@ -73,7 +73,7 @@ def client_reject_ticket(sender, instance,created, **kwargs):
 
 
 @receiver(pre_save,sender=Ticket)
-def client_accept_ticket(sender, instance,created, **kwargs):
+def client_accept_ticket(sender, instance, **kwargs):
     old_ticket = Ticket.objects.get(pk=instance.pk)
     if old_ticket.status == 'Pending Approval' and instance.status == 'Pending Payment':
         if instance.assigned_to.user.device_reg_id:
@@ -88,7 +88,7 @@ def client_accept_ticket(sender, instance,created, **kwargs):
             )
 
 @receiver(pre_save,sender=Ticket)
-def ticket_paid(sender, instance,created, **kwargs):
+def ticket_paid(sender, instance, **kwargs):
     old_ticket = Ticket.objects.get(pk=instance.pk)
     if old_ticket.status == 'Pending Payment' and instance.status == 'In Progress':
         if instance.client.device_reg_id:
