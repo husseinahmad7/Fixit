@@ -245,6 +245,7 @@ class LoginView(APIView):
         if user is not None:
             if user.is_active:
                 user.device_reg_id = device_reg_id
+                user.save()
                 # Generate a token for the user
                 token,created = Token.objects.get_or_create(user=user)
                 data = {
