@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'Users',
     # 'rest_auth'
-    'Ticket'
+    'Ticket',
+    'Notifications'
 ]
 
 MIDDLEWARE = [
@@ -186,3 +187,5 @@ EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 GOOGLE_DRIVE_STORAGE_JSON_KEY_FILE = None
 
 OLD_PASSWORD_FIELD_ENABLED = True
+
+FCM_API_KEY = env('FCM_API_KEY')

@@ -34,7 +34,7 @@ class User(AbstractUser):
     email = models.EmailField("Email address", unique=True)
     full_name = models.CharField("Full name",max_length=30)
     mobile = models.CharField("Mobile",max_length=20,blank=True,null=True)
-    # device_reg_id = models.CharField(max_length=255, blank=True, null=True)
+    device_reg_id = models.CharField(max_length=255, blank=True, null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['full_name', 'mobile']
