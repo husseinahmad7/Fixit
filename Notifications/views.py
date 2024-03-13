@@ -15,7 +15,17 @@ class NotificationListView(generics.ListAPIView):
 
     def get_queryset(self):
         # Filter notifications for the current user
-        return self.queryset.filter(user=self.request.user)
+        user = self.request.user
+        filtered = self.request.query_params.get('filtered', None)
+
+        if filtered == 'true':
+            # Retrieve unseen notifications (where 'unseen' is True)
+            unseen_notifications = self.queryset.filter(user=user, is_seen=False)
+            return unseen_notifications
+        else:
+            # Show all notifications
+            return self.queryset.filter(user=user)
+        # return self.queryset.filter(user=self.request.user)
 
 class MarkNotificationAsSeenView(generics.UpdateAPIView):
     queryset = Notification.objects.all()
