@@ -6,6 +6,7 @@ from .models import Notification
 from .serializers import NotificationSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
 
 
 class NotificationListView(generics.ListAPIView):
@@ -37,7 +38,9 @@ class MarkNotificationAsSeenView(generics.UpdateAPIView):
         instance = self.get_object()
         instance.is_seen = True
         instance.save()
-        return self.partial_update(request, *args, **kwargs)
+        self.partial_update(request, *args, **kwargs)
+
+        return Response({'success': 'The Notification has been seen.'},status=status.HTTP_200_OK)
 
 
 class UnseenNotificationCountView(APIView):
