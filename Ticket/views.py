@@ -12,7 +12,7 @@ from Users.models import Staff
 # from rest_framework.parsers import MultiPartParser, FormParser
 from .permissions import OwnerOrAdminPermission,TicketPictureOwnerOrAdminPermission,TicketOwnerPermission
 from django.db.models import Avg
-
+from Notifications.models import Notification
 
 
 
@@ -137,6 +137,16 @@ class TicketClientDetail(generics.RetrieveAPIView):
     queryset = Ticket.objects.all()
     serializer_class = TicketClientDetailSerializer
     permission_classes = [OwnerOrAdminPermission]
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        user = request.user
+        # Mark related notifications as seen
+        related_notifications = Notification.objects.filter(ticket=instance,user=user)
+        for notification in related_notifications:
+            notification.is_seen = True
+            notification.save()
+
+        return super().retrieve(request, *args, **kwargs)
 
 class TicketPictureCreateView(generics.CreateAPIView):
     serializer_class = TicketPictureSerializer
@@ -329,6 +339,17 @@ class StaffTicketDetailsView(generics.RetrieveUpdateDestroyAPIView):
             return Ticket.objects.filter(service__in=user.staff.services.all())
         else:
             return Ticket.objects.none()
+        
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        user = request.user
+        # Mark related notifications as seen
+        related_notifications = Notification.objects.filter(ticket=instance,user=user)
+        for notification in related_notifications:
+            notification.is_seen = True
+            notification.save()
+
+        return super().retrieve(request, *args, **kwargs)
 
 class StaffAssignTicket(generics.RetrieveUpdateAPIView):
     serializer_class = StaffTicketStatusSerializer
