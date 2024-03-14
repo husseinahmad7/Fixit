@@ -10,8 +10,8 @@ class Notification(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     is_seen = models.BooleanField(default=False)
     class Meta:
-        ordering = ['date']
-        
+        ordering = ['-date']
+
     def get_title_body(self):
         match self.type:
             case 1:
