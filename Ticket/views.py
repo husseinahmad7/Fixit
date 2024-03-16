@@ -97,6 +97,10 @@ class ServiceListByRating(generics.ListAPIView):
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
 
+    @method_decorator(cache_page(3600*3))  # Cache for 3 hour
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
     def get_queryset(self):
         # Calculate average rating for each service
         services = self.queryset.annotate(average_rating=Avg('tickets__client_rating'))
@@ -127,7 +131,7 @@ class ClientTicketsList(generics.ListAPIView):
     serializer_class = TicketSerializer
 
 
-    @method_decorator(cache_page(60*4))
+    @method_decorator(cache_page(60*3))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
     
@@ -160,7 +164,7 @@ class TicketClientDetail(generics.RetrieveAPIView):
         instance = self.get_object()
         user = request.user
         # Mark related notifications as seen
-        related_notifications = Notification.objects.filter(ticket=instance,user=user)
+        related_notifications = Notification.objects.filter(ticket=instance,user=user,is_seen=False)
         for notification in related_notifications:
             notification.is_seen = True
             notification.save()
@@ -326,7 +330,7 @@ class StaffAvailableTicketsList(generics.ListAPIView):
     serializer_class = TicketSerializer
     permission_classes = [IsAdminUser]
 
-    @method_decorator(cache_page(60*10))  # Cache for 3 hour
+    @method_decorator(cache_page(60*3))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
     
@@ -343,7 +347,7 @@ class StaffAssignedTicketsList(generics.ListAPIView):
     permission_classes = [IsAdminUser]
 
 
-    @method_decorator(cache_page(60*4))  # Cache for 3 hour
+    @method_decorator(cache_page(60*3))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
     
@@ -374,7 +378,7 @@ class StaffTicketDetailsView(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         user = request.user
         # Mark related notifications as seen
-        related_notifications = Notification.objects.filter(ticket=instance,user=user)
+        related_notifications = Notification.objects.filter(ticket=instance,user=user,is_seen=False)
         for notification in related_notifications:
             notification.is_seen = True
             notification.save()
@@ -426,7 +430,7 @@ class WorkerTicketsList(generics.ListAPIView):
     serializer_class = TicketSerializer
     permission_classes = [IsAdminUser]
 
-    @method_decorator(cache_page(3600))  # Cache for 3 hour
+    @method_decorator(cache_page(60*10))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
     def get_queryset(self):

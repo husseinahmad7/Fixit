@@ -53,14 +53,14 @@ class Ticket(models.Model):
 
     ]
     
-    client = models.ForeignKey('Users.User', on_delete=models.CASCADE)
+    client = models.ForeignKey('Users.User', on_delete=models.CASCADE,db_index=True)
     # title = models.CharField(max_length=200)
     description = models.TextField()
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='tickets', null=True, blank=True)
     location = models.JSONField()
     info_fields = models.JSONField(null=True, blank=True)
-    assigned_to = models.ForeignKey('Users.Staff', on_delete=models.CASCADE, related_name='tickets', null=True, blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES,default='Open')
+    assigned_to = models.ForeignKey('Users.Staff', on_delete=models.CASCADE, related_name='tickets', null=True, blank=True,db_index=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES,default='Open',db_index=True)
     client_rating = models.IntegerField(blank=True,null=True)
     notes = models.TextField(blank=True,null=True)
     final_price = models.DecimalField(max_digits=10, decimal_places=2,blank=True,null=True)

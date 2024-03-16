@@ -5,10 +5,10 @@ class Notification(models.Model):
                           (4,'client accept'),(5,'paid ticket'),(6,'ticket rejected'),(7,'ticket done'),(8,'ticket rated'))
     
     ticket = models.ForeignKey('Ticket.Ticket',on_delete=models.CASCADE, blank=True, null=True)
-    user = models.ForeignKey('Users.User', on_delete=models.CASCADE)
+    user = models.ForeignKey('Users.User', on_delete=models.CASCADE,db_index=True)
     type = models.IntegerField(choices=NOTIFICATION_TYPE)
     date = models.DateTimeField(auto_now_add=True)
-    is_seen = models.BooleanField(default=False)
+    is_seen = models.BooleanField(default=False,db_index=True)
     class Meta:
         ordering = ['-date']
 
