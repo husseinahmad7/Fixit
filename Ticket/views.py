@@ -319,7 +319,7 @@ class StaffAssignedTicketsList(generics.ListAPIView):
     permission_classes = [IsAdminUser]
     def get_queryset(self):
         user = self.request.user
-        status_param = self.request.query_params.get('isfiltered')
+        status_param = self.request.query_params.get('isfiltered','')
         status_filt = ['Pending Approval','Pending Payment','In Progress']
         if user.is_staff and status_param == 'true':
 
