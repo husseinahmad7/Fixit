@@ -80,6 +80,10 @@ class ServiceListByCategory(generics.ListAPIView):
     serializer_class = ServiceSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    @method_decorator(cache_page(3600*3))  # Cache for 3 hour
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
     def get_queryset(self):
         # Assuming you have a category ID passed as a query parameter (e.g., ?category_id=1)
         category_id = self.request.query_params.get('category_id')
@@ -123,7 +127,7 @@ class ClientTicketsList(generics.ListAPIView):
     serializer_class = TicketSerializer
 
 
-    @method_decorator(cache_page(3600*3))  # Cache for 3 hour
+    @method_decorator(cache_page(60*4))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
     
@@ -322,7 +326,7 @@ class StaffAvailableTicketsList(generics.ListAPIView):
     serializer_class = TicketSerializer
     permission_classes = [IsAdminUser]
 
-    @method_decorator(cache_page(3600*3))  # Cache for 3 hour
+    @method_decorator(cache_page(60*10))  # Cache for 3 hour
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
     
@@ -339,7 +343,7 @@ class StaffAssignedTicketsList(generics.ListAPIView):
     permission_classes = [IsAdminUser]
 
 
-    @method_decorator(cache_page(3600*3))  # Cache for 3 hour
+    @method_decorator(cache_page(60*4))  # Cache for 3 hour
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
     
@@ -421,6 +425,10 @@ class StaffAssignTicket(generics.RetrieveUpdateAPIView):
 class WorkerTicketsList(generics.ListAPIView):
     serializer_class = TicketSerializer
     permission_classes = [IsAdminUser]
+
+    @method_decorator(cache_page(3600))  # Cache for 3 hour
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
     def get_queryset(self):
         user = self.request.user
         if user.is_staff:
