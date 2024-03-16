@@ -14,6 +14,8 @@ from .permissions import OwnerOrAdminPermission,TicketPictureOwnerOrAdminPermiss
 from django.db.models import Avg
 from Notifications.models import Notification
 
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 
 
 def generate_payment_code(length=8):
@@ -33,6 +35,10 @@ class ServiceCategoryList(generics.ListAPIView):
     serializer_class = ServiceCategorySerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    @method_decorator(cache_page(3600*3))  # Cache for 3 hour
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
 class ServiceCategoryCreate(generics.CreateAPIView):
     queryset = ServiceCategory.objects.all()
     serializer_class = ServiceCategorySerializer
@@ -50,6 +56,10 @@ class ServiceList(generics.ListAPIView):
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+
+    @method_decorator(cache_page(3600*3))  # Cache for 3 hour
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
 
 class ServiceCreate(generics.CreateAPIView):
     queryset = Service.objects.all()
@@ -112,6 +122,11 @@ class ClientTicketsList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = TicketSerializer
 
+
+    @method_decorator(cache_page(3600*3))  # Cache for 3 hour
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
     def get_queryset(self):
         user = self.request.user
         queryset = Ticket.objects.filter(client=user)
@@ -306,6 +321,11 @@ class MarkAsClosedView(generics.UpdateAPIView):
 class StaffAvailableTicketsList(generics.ListAPIView):
     serializer_class = TicketSerializer
     permission_classes = [IsAdminUser]
+
+    @method_decorator(cache_page(3600*3))  # Cache for 3 hour
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
     def get_queryset(self):
         user = self.request.user
         if user.is_staff:
@@ -317,6 +337,12 @@ class StaffAvailableTicketsList(generics.ListAPIView):
 class StaffAssignedTicketsList(generics.ListAPIView):
     serializer_class = TicketSerializer
     permission_classes = [IsAdminUser]
+
+
+    @method_decorator(cache_page(3600*3))  # Cache for 3 hour
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
     def get_queryset(self):
         user = self.request.user
         status_param = self.request.query_params.get('isfiltered','')
