@@ -116,7 +116,7 @@ class ClientTicketsList(generics.ListAPIView):
         user = self.request.user
         queryset = Ticket.objects.filter(client=user)
         # Check if the 'filtered' parameter is set to 'true'
-        filter_param = self.request.query_params.get('filtered')
+        filter_param = self.request.query_params.get('filtered','')
         if filter_param == 'true':
             # Customize the status values as needed 
             allowed_statuses = ['Open', 'In Progress', 'Pending Payment','Pending Approval','Closed']
@@ -324,7 +324,7 @@ class StaffAssignedTicketsList(generics.ListAPIView):
         if user.is_staff and status_param == 'true':
 
             return Ticket.objects.filter(assigned_to=user.staff,status__in=status_filt)
-        elif user.is_staff and status_param is None:
+        elif user.is_staff and status_param == '':
             return Ticket.objects.filter(assigned_to=user.staff)
         else:
             return Ticket.objects.none()
