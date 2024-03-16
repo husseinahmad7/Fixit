@@ -146,3 +146,40 @@ def ticket_paid(sender, instance, **kwargs):
                                 message_body=body,
                                 data_message=data_msg
                             )
+
+@receiver(pre_save,sender=Ticket)
+def ticket_closed(sender, instance, **kwargs):
+    if not instance._state.adding:
+
+        old_ticket = Ticket.objects.get(pk=instance.pk)
+        if old_ticket.status =='In Progress' and instance.status == 'Closed':
+            if instance.client.device_reg_id:
+                client_noti = Notification.objects.create(user=instance.client,ticket=instance,type=7)
+                title, body = client_noti.get_title_body()
+                data_msg={'ticket_id':instance.id,'type':client_noti.type}
+                push_service.notify_single_device(
+                    registration_id=instance.client.device_reg_id,
+                    message_title=title,
+                    message_body=body,
+                    data_message=data_msg
+                )
+
+
+@receiver(pre_save,sender=Ticket)
+def ticket_rated(sender, instance, **kwargs):
+    if not instance._state.adding:
+
+        old_ticket = Ticket.objects.get(pk=instance.pk)
+        from Users.models import User
+        owner = User.objects.filter(is_superuser=True).first()
+        if old_ticket.status =='Closed' and instance.status == 'Rated':
+            if owner.device_reg_id:
+                client_noti = Notification.objects.create(user=owner,ticket=instance,type=8)
+                title, body = client_noti.get_title_body()
+                data_msg={'ticket_id':instance.id,'type':client_noti.type}
+                push_service.notify_single_device(
+                    registration_id=owner.device_reg_id,
+                    message_title=title,
+                    message_body=body,
+                    data_message=data_msg
+                )
