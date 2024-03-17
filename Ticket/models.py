@@ -64,9 +64,7 @@ class Ticket(models.Model):
     client_rating = models.IntegerField(blank=True,null=True)
     notes = models.TextField(blank=True,null=True)
     final_price = models.DecimalField(max_digits=10, decimal_places=2,blank=True,null=True)
-    # is_paid = models.BooleanField(default=False)
-    submission_date = models.DateTimeField(auto_now_add=True)
-    # qr_code = models.ImageField(upload_to='qr_codes/', null=True, blank=True)
+    submission_date = models.DateTimeField(auto_now_add=True,db_index=True)
     workers = models.ManyToManyField('Users.Staff', related_name='tickets_assigned', blank=True)
     paycode = models.CharField(max_length=20,blank=True,null=True)
 
@@ -74,24 +72,6 @@ class Ticket(models.Model):
         ordering = ['submission_date']
     def __str__(self) -> str:
         return f'{self.pk} -- {self.status}'
-    # def clean(self):
-    #     if self.assigned_to and not self.assigned_to.is_supervisor:
-    #         raise ValidationError({"detail": "Assigned staff member must be a supervisor"})
-    
-    # def save(self, *args, **kwargs):
-    #     # Generate QR code
-    #     qr = qrcode.QRCode(version=1, box_size=10, border=5)
-    #     qr.add_data(str(self.pk))
-    #     qr.make(fit=True)
-    #     img = qr.make_image(fill_color='black', back_color='white')
-
-    #     # Save QR code image to buffer
-    #     buffer = BytesIO()
-    #     img.save(buffer, 'PNG')
-    #     self.qr_code.save(f'{self.pk}.png', File(buffer), save=False)
-    #     buffer.close()
-        
-    #     super().save(*args, **kwargs)
 
 
 class TicketPicture(models.Model):

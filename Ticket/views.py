@@ -131,13 +131,12 @@ class ClientTicketsList(generics.ListAPIView):
     serializer_class = TicketSerializer
 
 
-    @method_decorator(cache_page(60*3))
+    @method_decorator(cache_page(60*1))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
     
     def get_queryset(self):
         user = self.request.user
-        queryset = Ticket.objects.filter(client=user)
         # Check if the 'filtered' parameter is set to 'true'
         filter_param = self.request.query_params.get('filtered','')
         if filter_param == 'true':
@@ -145,7 +144,10 @@ class ClientTicketsList(generics.ListAPIView):
             allowed_statuses = ['Open', 'In Progress', 'Pending Payment','Pending Approval','Closed']
 
             # Filter tickets based on the allowed statuses
-            queryset = queryset.filter(status__in=allowed_statuses)
+            queryset = Ticket.objects.filter(status__in=allowed_statuses).select_related('client').prefetch_related('workers__services')
+        elif filter_param == '':
+            queryset = Ticket.objects.filter(client=user).select_related('client').prefetch_related('workers__services')
+
 
         return queryset
     
@@ -164,10 +166,10 @@ class TicketClientDetail(generics.RetrieveAPIView):
         instance = self.get_object()
         user = request.user
         # Mark related notifications as seen
-        related_notifications = Notification.objects.filter(ticket=instance,user=user,is_seen=False)
-        for notification in related_notifications:
-            notification.is_seen = True
-            notification.save()
+        Notification.objects.filter(ticket=instance,user=user,is_seen=False).update(is_seen=True)
+        # for notification in related_notifications:
+        #     notification.is_seen = True
+        #     notification.save()
 
         return super().retrieve(request, *args, **kwargs)
 
@@ -330,14 +332,15 @@ class StaffAvailableTicketsList(generics.ListAPIView):
     serializer_class = TicketSerializer
     permission_classes = [IsAdminUser]
 
-    @method_decorator(cache_page(60*3))
+    @method_decorator(cache_page(60*1))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
     
     def get_queryset(self):
         user = self.request.user
         if user.is_staff:
-            return Ticket.objects.filter(assigned_to__isnull=True,service__in=user.staff.services.all()).exclude(status='Rejected')
+            return Ticket.objects.filter(assigned_to__isnull=True,service__in=user.staff.services.all()).exclude(status='Rejected').select_related('client').prefetch_related('workers__services')
+                    
         else:
             return Ticket.objects.none()
 
@@ -347,7 +350,7 @@ class StaffAssignedTicketsList(generics.ListAPIView):
     permission_classes = [IsAdminUser]
 
 
-    @method_decorator(cache_page(60*3))
+    @method_decorator(cache_page(60*1))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
     
@@ -357,9 +360,9 @@ class StaffAssignedTicketsList(generics.ListAPIView):
         status_filt = ['Pending Approval','Pending Payment','In Progress']
         if user.is_staff and status_param == 'true':
 
-            return Ticket.objects.filter(assigned_to=user.staff,status__in=status_filt)
+            return Ticket.objects.filter(assigned_to=user.staff,status__in=status_filt).select_related('client').prefetch_related('workers__services')
         elif user.is_staff and status_param == '':
-            return Ticket.objects.filter(assigned_to=user.staff)
+            return Ticket.objects.filter(assigned_to=user.staff).select_related('client').prefetch_related('workers__services')
         else:
             return Ticket.objects.none()
         
@@ -378,10 +381,10 @@ class StaffTicketDetailsView(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         user = request.user
         # Mark related notifications as seen
-        related_notifications = Notification.objects.filter(ticket=instance,user=user,is_seen=False)
-        for notification in related_notifications:
-            notification.is_seen = True
-            notification.save()
+        Notification.objects.filter(ticket=instance,user=user,is_seen=False).update(is_seen=True)
+        # for notification in related_notifications:
+            # notification.is_seen = True
+            # notification.save()
 
         return super().retrieve(request, *args, **kwargs)
 
@@ -430,7 +433,7 @@ class WorkerTicketsList(generics.ListAPIView):
     serializer_class = TicketSerializer
     permission_classes = [IsAdminUser]
 
-    @method_decorator(cache_page(60*10))
+    @method_decorator(cache_page(60*1))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
     def get_queryset(self):
