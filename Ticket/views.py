@@ -144,10 +144,9 @@ class ClientTicketsList(generics.ListAPIView):
             allowed_statuses = ['Open', 'In Progress', 'Pending Payment','Pending Approval','Closed']
 
             # Filter tickets based on the allowed statuses
-            queryset = Ticket.objects.filter(status__in=allowed_statuses).select_related('client').prefetch_related('workers__services')
+            queryset = Ticket.objects.filter(client=user,status__in=allowed_statuses).select_related('client').prefetch_related('workers__services')
         elif filter_param == '':
             queryset = Ticket.objects.filter(client=user).select_related('client').prefetch_related('workers__services')
-
 
         return queryset
     
