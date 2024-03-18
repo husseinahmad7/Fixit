@@ -132,10 +132,10 @@ class ClientTicketsList(generics.ListAPIView):
     serializer_class = TicketSerializer
 
 
-    @method_decorator(cache_page(60*1))
+    @method_decorator([cache_page(60*1),query_debugger])
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
-    @method_decorator(query_debugger)
+    # @method_decorator(query_debugger)
     def get_queryset(self):
         user = self.request.user
         # Check if the 'filtered' parameter is set to 'true'
