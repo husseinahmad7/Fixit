@@ -56,6 +56,12 @@ class TicketSerializer(serializers.ModelSerializer):
         representation.update(client_info)
         representation['workers'] = workers_info
         return representation
+
+class TicketListSerializer(serializers.ModelSerializer):
+    service = ServiceSerializer()
+    class Meta:
+        model = Ticket
+        fields = ['id', 'service', 'assigned_to', 'status','final_price', 'submission_date','client_rating']
     
 class TicketClientDetailSerializer(serializers.ModelSerializer):
     service = ServiceSerializer()

@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticatedOrReadOnly,IsAuthenticated
 from .models import Ticket, Service, ServiceCategory, TicketPicture
-from .serializers import TicketSerializer, ServiceSerializer, ServiceCategorySerializer,TicketClientDetailSerializer, TicketCreationSerializer,TicketPictureSerializer,TicketStatusSerializer,StaffTicketDetailsSerializer, StaffTicketStatusSerializer,TicketClosingSerializer
+from .serializers import TicketSerializer, ServiceSerializer, ServiceCategorySerializer,TicketListSerializer,TicketClientDetailSerializer, TicketCreationSerializer,TicketPictureSerializer,TicketStatusSerializer,StaffTicketDetailsSerializer, StaffTicketStatusSerializer,TicketClosingSerializer
 from Users.models import Staff
 # from rest_framework.parsers import MultiPartParser, FormParser
 from .permissions import OwnerOrAdminPermission,TicketPictureOwnerOrAdminPermission,TicketOwnerPermission
@@ -129,10 +129,10 @@ class TicketCreate(generics.CreateAPIView):
 
 class ClientTicketsList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = TicketSerializer
+    serializer_class = TicketListSerializer
 
 
-    @method_decorator([cache_page(60*1),query_debugger])
+    @method_decorator(cache_page(60*1))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
     # @method_decorator(query_debugger)
