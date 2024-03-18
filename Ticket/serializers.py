@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import Ticket, ServiceCategory, Service, TicketPicture
 from Users.models import User
 from django.db.models import Avg
+from django.utils.decorators import method_decorator
+from .decorators import query_debugger
 
 class ServiceCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -56,7 +58,7 @@ class TicketSerializer(serializers.ModelSerializer):
         representation.update(client_info)
         representation['workers'] = workers_info
         return representation
-
+@method_decorator(query_debugger,name='to_representation')
 class TicketListSerializer(serializers.ModelSerializer):
     service = ServiceSerializer()
     class Meta:

@@ -132,7 +132,7 @@ class ClientTicketsList(generics.ListAPIView):
     serializer_class = TicketListSerializer
 
 
-    @method_decorator(cache_page(60*1))
+    @method_decorator([cache_page(60*1),query_debugger])
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
     # @method_decorator(query_debugger)
