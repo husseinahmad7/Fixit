@@ -296,6 +296,7 @@ class LogoutView(APIView):
             token.delete()
         if user.device_reg_id is not None:
             user.device_reg_id = None
+            user.save()
         # Return a success response
         return Response({'success': 'User logged out successfully.'})
 
