@@ -65,7 +65,7 @@ class Ticket(models.Model):
     notes = models.TextField(blank=True,null=True)
     final_price = models.DecimalField(max_digits=10, decimal_places=2,blank=True,null=True)
     submission_date = models.DateTimeField(auto_now_add=True,db_index=True)
-    workers = models.ManyToManyField('Users.Staff', related_name='tickets_assigned', blank=True)
+    workers = models.ManyToManyField('Users.Staff', related_name='tickets_assigned', blank=True,limit_choices_to={'is_supervisor': False})
     paycode = models.CharField(max_length=20,blank=True,null=True)
 
     class Meta:
