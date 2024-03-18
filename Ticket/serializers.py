@@ -20,6 +20,13 @@ class ServiceSerializer(serializers.ModelSerializer):
         # Calculate the average rating for the service
         return obj.tickets.aggregate(Avg('client_rating')).get('client_rating__avg', None)
 
+class TicketServiceSerializer(serializers.ModelSerializer):
+    service_category = serializers.PrimaryKeyRelatedField(queryset=ServiceCategory.objects.all())
+    class Meta:
+        model = Service
+        fields = ['id', 'title', 'description', 'initial_price', 'service_category','picture','type','is_final_price']
+
+
 class TicketPictureSerializer(serializers.ModelSerializer):
     ticket = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
@@ -42,7 +49,7 @@ class TicketSerializer(serializers.ModelSerializer):
             
         }
         # Serialize detailed information about each worker
-        workers_info = [{'id': worker.id,'user_id':worker.user.id, 'full_name': worker.user.full_name,'email':worker.user.email,'mobile':worker.user.mobile,'department':worker.department,'salary':worker.salary,'availability':worker.availability,'services':ServiceSerializer(worker.services.all(),many=True).data} for worker in instance.workers.all()]
+        workers_info = [{'id': worker.id,'user_id':worker.user.id, 'full_name': worker.user.full_name,'email':worker.user.email,'mobile':worker.user.mobile,'department':worker.department,'salary':worker.salary,'availability':worker.availability,'services':TicketServiceSerializer(worker.services.all(),many=True).data} for worker in instance.workers.all()]
         
         # Combine the client info with other serialized fields
         representation = super().to_representation(instance)
