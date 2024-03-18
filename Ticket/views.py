@@ -17,6 +17,7 @@ from Notifications.models import Notification
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
 
+from .decorators import query_debugger
 
 def generate_payment_code(length=8):
     import secrets
@@ -134,7 +135,7 @@ class ClientTicketsList(generics.ListAPIView):
     @method_decorator(cache_page(60*1))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
-    
+    @method_decorator(query_debugger)
     def get_queryset(self):
         user = self.request.user
         # Check if the 'filtered' parameter is set to 'true'
