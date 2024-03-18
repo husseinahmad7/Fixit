@@ -59,7 +59,7 @@ class Ticket(models.Model):
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='tickets', null=True, blank=True)
     location = models.JSONField()
     info_fields = models.JSONField(null=True, blank=True)
-    assigned_to = models.ForeignKey('Users.Staff', on_delete=models.CASCADE, related_name='tickets', null=True, blank=True,db_index=True)
+    assigned_to = models.ForeignKey('Users.Staff', on_delete=models.CASCADE, related_name='tickets', null=True, blank=True,db_index=True,limit_choices_to={'is_supervisor': True})
     status = models.CharField(max_length=20, choices=STATUS_CHOICES,default='Open',db_index=True)
     client_rating = models.IntegerField(blank=True,null=True)
     notes = models.TextField(blank=True,null=True)
