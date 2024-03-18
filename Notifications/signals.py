@@ -22,12 +22,13 @@ def new_ticket(sender, instance,created, **kwargs):
                     
                      # Send the notification to the user's device
                     registration_id = supervisor.user.device_reg_id
-                    if registration_id:
-                        noti = Notification.objects.create(
+                    noti = Notification.objects.create(
                         ticket=instance,
                         user=supervisor.user,
                         type=1
                     )
+                    if registration_id:
+                        
                         title, body = noti.get_title_body()
                         data_msg={'ticket_id':instance.id,'type':noti.type}
                         push_service.notify_single_device(
@@ -47,8 +48,9 @@ def staff_assign_ticket(sender, instance, **kwargs):
 
         old_ticket = Ticket.objects.get(pk=instance.pk)
         if old_ticket.assigned_to is None and instance.assigned_to is not None:
+            client_noti = Notification.objects.create(user=instance.client,ticket=instance,type=2)
+
             if instance.client.device_reg_id:
-                client_noti = Notification.objects.create(user=instance.client,ticket=instance,type=2)
                 title, body = client_noti.get_title_body()
                 data_msg={'ticket_id':instance.id,'type':client_noti.type}
                 push_service.notify_single_device(
@@ -64,8 +66,9 @@ def staff_reject_ticket(sender, instance, **kwargs):
 
         old_ticket = Ticket.objects.get(pk=instance.pk)
         if old_ticket.status =='Open' and instance.status == 'Rejected':
+            client_noti = Notification.objects.create(user=instance.client,ticket=instance,type=6)
+
             if instance.client.device_reg_id:
-                client_noti = Notification.objects.create(user=instance.client,ticket=instance,type=6)
                 title, body = client_noti.get_title_body()
                 data_msg={'ticket_id':instance.id,'type':client_noti.type}
                 push_service.notify_single_device(
@@ -81,8 +84,9 @@ def client_reject_ticket(sender, instance, **kwargs):
 
         old_ticket = Ticket.objects.get(pk=instance.pk)
         if old_ticket.status == 'Pending Approval' and instance.status == 'Client Rejected':
+            staff_noti = Notification.objects.create(user=instance.assigned_to.user,ticket=instance,type=3)
+
             if instance.assigned_to.user.device_reg_id:
-                staff_noti = Notification.objects.create(user=instance.assigned_to.user,ticket=instance,type=3)
                 title, body = staff_noti.get_title_body()
                 data_msg={'ticket_id':instance.id,'type':staff_noti.type}
                 push_service.notify_single_device(
@@ -99,8 +103,9 @@ def client_accept_ticket(sender, instance, **kwargs):
 
         old_ticket = Ticket.objects.get(pk=instance.pk)
         if old_ticket.status == 'Pending Approval' and instance.status == 'Pending Payment':
+            staff_noti = Notification.objects.create(user=instance.assigned_to.user,ticket=instance,type=4)
+
             if instance.assigned_to.user.device_reg_id:
-                staff_noti = Notification.objects.create(user=instance.assigned_to.user,ticket=instance,type=4)
                 title, body = staff_noti.get_title_body()
                 data_msg={'ticket_id':instance.id,'type':staff_noti.type}
                 push_service.notify_single_device(
@@ -116,8 +121,9 @@ def ticket_paid(sender, instance, **kwargs):
 
         old_ticket = Ticket.objects.get(pk=instance.pk)
         if old_ticket.status == 'Pending Payment' and instance.status == 'In Progress':
+            client_noti = Notification.objects.create(user=instance.client,ticket=instance,type=5)
+            
             if instance.client.device_reg_id:
-                client_noti = Notification.objects.create(user=instance.client,ticket=instance,type=5)
                 title, body = client_noti.get_title_body()
                 data_msg={'ticket_id':instance.id,'type':client_noti.type}
                 push_service.notify_single_device(
@@ -131,12 +137,13 @@ def ticket_paid(sender, instance, **kwargs):
                         
                         # Send the notification to the user's device
                         registration_id = worker.user.device_reg_id
-                        if registration_id:
-                            noti = Notification.objects.create(
+                        noti = Notification.objects.create(
                             ticket=instance,
                             user=worker.user,
                             type=5
                         )
+                        if registration_id:
+                            
                             title = 'Ticket in progress'
                             body = 'There is a Ticket paid and must be work on'
                             data_msg={'ticket_id':instance.id,'type':noti.type}
@@ -153,8 +160,9 @@ def ticket_closed(sender, instance, **kwargs):
 
         old_ticket = Ticket.objects.get(pk=instance.pk)
         if old_ticket.status =='In Progress' and instance.status == 'Closed':
+            client_noti = Notification.objects.create(user=instance.client,ticket=instance,type=7)
+
             if instance.client.device_reg_id:
-                client_noti = Notification.objects.create(user=instance.client,ticket=instance,type=7)
                 title, body = client_noti.get_title_body()
                 data_msg={'ticket_id':instance.id,'type':client_noti.type}
                 push_service.notify_single_device(
@@ -173,8 +181,9 @@ def ticket_rated(sender, instance, **kwargs):
         from Users.models import User
         owner = User.objects.filter(is_superuser=True).first()
         if old_ticket.status =='Closed' and instance.status == 'Rated':
+            client_noti = Notification.objects.create(user=owner,ticket=instance,type=8)
+
             if owner.device_reg_id:
-                client_noti = Notification.objects.create(user=owner,ticket=instance,type=8)
                 title, body = client_noti.get_title_body()
                 data_msg={'ticket_id':instance.id,'type':client_noti.type}
                 push_service.notify_single_device(
