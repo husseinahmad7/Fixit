@@ -13,7 +13,7 @@ from Users.models import Staff
 from .permissions import OwnerOrAdminPermission,TicketPictureOwnerOrAdminPermission,TicketOwnerPermission
 from django.db.models import Avg
 from Notifications.models import Notification
-
+from django.db.models import Prefetch
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
 
@@ -145,7 +145,9 @@ class ClientTicketsList(generics.ListAPIView):
             allowed_statuses = ['Open', 'In Progress', 'Pending Payment','Pending Approval','Closed']
 
             # Filter tickets based on the allowed statuses
-            queryset = Ticket.objects.filter(client=user,status__in=allowed_statuses).select_related('client').prefetch_related('workers__services')
+            queryset = Ticket.objects.filter(client=user,status__in=allowed_statuses).select_related('client').prefetch_related(
+                Prefetch('workers', queryset=Staff.objects.select_related('user').prefetch_related('services'))
+            )
         elif filter_param == '':
             queryset = Ticket.objects.filter(client=user).select_related('client').prefetch_related('workers__services')
 
