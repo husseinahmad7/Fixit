@@ -46,14 +46,7 @@ class User(AbstractUser):
     
     def __str__(self):
         return f"{self.full_name}"
-# class Skill(models.Model):
-#     name = models.CharField(max_length=100, unique=True)
-#     def __str__(self):
-#         return f"{self.name}"
 
-# class Client(models.Model):
-#     user = models.OneToOneField('User', on_delete=models.CASCADE)
-#     address = models.CharField(max_length=200)
 
 class Staff(models.Model):
     
