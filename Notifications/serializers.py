@@ -13,17 +13,16 @@ class NotificationSerializer(serializers.ModelSerializer):
     
     def get_title(self, obj):
         user = self.context.get('request').user
-        if not user.is_staff:
-            return obj.get_title_body()[0]
-        else:
+        if  user.is_staff and user.staff.is_supervisor==False:
             return 'Ticket in progress'
+        
+        return obj.get_title_body()[0]
 
     def get_body(self, obj):
         user = self.context.get('request').user
-        if not user.is_staff:
-            return obj.get_title_body()[1]
-        else:
+        if user.is_staff and user.staff.is_supervisor==False:
             return 'There is a Ticket paid and must be work on'
+        return obj.get_title_body()[1]
         
     class Meta:
         model = Notification
