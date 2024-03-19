@@ -23,7 +23,7 @@ class ServiceSerializer(serializers.ModelSerializer):
         return obj.tickets.aggregate(Avg('client_rating')).get('client_rating__avg', None)
 
 class TicketServiceSerializer(serializers.ModelSerializer):
-    service_category = serializers.PrimaryKeyRelatedField(queryset=ServiceCategory.objects.all())
+    
     class Meta:
         model = Service
         fields = ['id', 'title', 'initial_price','picture','is_final_price']
