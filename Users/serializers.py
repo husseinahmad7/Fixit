@@ -90,7 +90,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         if data['password'] != data['confirm_password']:
-            raise serializers.ValidationError("Passwords do not match.")
+            # Determine which field has the error
+            if 'password' in self.initial_data:
+                raise serializers.ValidationError({"password": "Passwords do not match."})
+            elif 'confirm_password' in self.initial_data:
+                raise serializers.ValidationError({"confirm_password": "Passwords do not match."})
         return data
 
     def create(self, validated_data):
