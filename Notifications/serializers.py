@@ -1,12 +1,13 @@
 # serializers.py
 from rest_framework import serializers
 from .models import Notification
-from Ticket.serializers import TicketSerializer
+from Ticket.serializers import TicketListSerializer
 from Ticket.decorators import query_debugger
 from django.utils.decorators import method_decorator
+
 @method_decorator(query_debugger,name='to_representation')
 class NotificationSerializer(serializers.ModelSerializer):
-    ticket = TicketSerializer()
+    ticket = TicketListSerializer()
     title = serializers.SerializerMethodField()
     body = serializers.SerializerMethodField()
 

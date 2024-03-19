@@ -26,7 +26,7 @@ class TicketServiceSerializer(serializers.ModelSerializer):
     service_category = serializers.PrimaryKeyRelatedField(queryset=ServiceCategory.objects.all())
     class Meta:
         model = Service
-        fields = ['id', 'title', 'description', 'initial_price', 'service_category','picture','type','is_final_price']
+        fields = ['id', 'title', 'initial_price','picture','is_final_price']
 
 
 class TicketPictureSerializer(serializers.ModelSerializer):
@@ -60,7 +60,10 @@ class TicketSerializer(serializers.ModelSerializer):
         return representation
 @method_decorator(query_debugger,name='to_representation')
 class TicketListSerializer(serializers.ModelSerializer):
-    service = ServiceSerializer()
+    """
+        fields = ['id', 'service', 'assigned_to', 'status','final_price', 'submission_date','client_rating']
+    """
+    service = TicketServiceSerializer()
     class Meta:
         model = Ticket
         fields = ['id', 'service', 'assigned_to', 'status','final_price', 'submission_date','client_rating']

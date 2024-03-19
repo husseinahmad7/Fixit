@@ -145,11 +145,14 @@ class ClientTicketsList(generics.ListAPIView):
             allowed_statuses = ['Open', 'In Progress', 'Pending Payment','Pending Approval','Closed']
 
             # Filter tickets based on the allowed statuses
-            queryset = Ticket.objects.filter(client=user,status__in=allowed_statuses).select_related('client').prefetch_related(
-                Prefetch('workers', queryset=Staff.objects.select_related('user').prefetch_related('services'))
-            )
+            
+            queryset = Ticket.objects.filter(client=user,status__in=allowed_statuses).prefetch_related('service')
+            
+            # queryset = Ticket.objects.filter(client=user,status__in=allowed_statuses).select_related('client').prefetch_related(
+            #     Prefetch('workers', queryset=Staff.objects.select_related('user').prefetch_related('services'))
+            # )
         elif filter_param == '':
-            queryset = Ticket.objects.filter(client=user).select_related('client').prefetch_related('workers__services')
+            queryset = Ticket.objects.filter(client=user).prefetch_related('service')
 
         return queryset
     
@@ -331,7 +334,7 @@ class MarkAsClosedView(generics.UpdateAPIView):
         else:
             return Response({'error': 'Action is not allowed.'}, status=status.HTTP_403_FORBIDDEN)
 class StaffAvailableTicketsList(generics.ListAPIView):
-    serializer_class = TicketSerializer
+    serializer_class = TicketListSerializer
     permission_classes = [IsAdminUser]
 
     @method_decorator(cache_page(60*1))
@@ -341,14 +344,14 @@ class StaffAvailableTicketsList(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         if user.is_staff:
-            return Ticket.objects.filter(assigned_to__isnull=True,service__in=user.staff.services.all()).exclude(status='Rejected').select_related('client').prefetch_related('workers__services')
+            return Ticket.objects.filter(assigned_to__isnull=True,service__in=user.staff.services.all()).exclude(status='Rejected').select_related('client').prefetch_related('service')
                     
         else:
             return Ticket.objects.none()
 
 
 class StaffAssignedTicketsList(generics.ListAPIView):
-    serializer_class = TicketSerializer
+    serializer_class = TicketListSerializer
     permission_classes = [IsAdminUser]
 
 
@@ -362,9 +365,9 @@ class StaffAssignedTicketsList(generics.ListAPIView):
         status_filt = ['Pending Approval','Pending Payment','In Progress']
         if user.is_staff and status_param == 'true':
 
-            return Ticket.objects.filter(assigned_to=user.staff,status__in=status_filt).select_related('client').prefetch_related('workers__services')
+            return Ticket.objects.filter(assigned_to=user.staff,status__in=status_filt).select_related('client').prefetch_related('service')
         elif user.is_staff and status_param == '':
-            return Ticket.objects.filter(assigned_to=user.staff).select_related('client').prefetch_related('workers__services')
+            return Ticket.objects.filter(assigned_to=user.staff).select_related('client').prefetch_related('service')
         else:
             return Ticket.objects.none()
         
@@ -437,7 +440,7 @@ class StaffAssignTicket(generics.RetrieveUpdateAPIView):
         ticket.save()
 
 class WorkerTicketsList(generics.ListAPIView):
-    serializer_class = TicketSerializer
+    serializer_class = TicketListSerializer
     permission_classes = [IsAdminUser]
 
     @method_decorator(cache_page(60*1))
@@ -446,22 +449,6 @@ class WorkerTicketsList(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         if user.is_staff:
-            return Ticket.objects.filter(workers=user.staff,status='In Progress')
+            return Ticket.objects.filter(workers=user.staff,status='In Progress').select_related('client').prefetch_related('service')
         else:
             return Ticket.objects.none()
-# class QRCodeScanView(APIView):
-#     def post(self, request):
-#         qr_code_path = request.data.get('qr_code')
-#         staff_id = request.data.get('staff_id')
-
-#         try:
-#             ticket = Ticket.objects.get(qr_code=qr_code_path, assigned_to_staff_id=staff_id)
-#         except Ticket.DoesNotExist:
-#             return Response({'message': 'Invalid QR code or staff ID'}, status=status.HTTP_400_BAD_REQUEST)
-
-#         ticket.is_paid = True
-#         ticket.status = 'Done'
-#         ticket.save()
-
-#         return Response({'message': 'Ticket marked as paid and done'}, status=status.HTTP_200_OK)
-
