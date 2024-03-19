@@ -29,7 +29,7 @@ class Notification(models.Model):
                 return ('Ticket accepted',f'The Ticket has been accepted by {self.ticket.client.full_name}')
 
             case 5:
-                return ('Ticket paid',f'The Ticket has been paid')
+                return ('Ticket paid',f'The Ticket has been paid and ready to work on')
             case 6:
                 return ('Ticket rejected',f'The Ticket has been rejected')
             case 7:
