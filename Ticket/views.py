@@ -382,8 +382,9 @@ class StaffTicketDetailsView(generics.RetrieveUpdateDestroyAPIView):
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         user = request.user
-        # Mark related notifications as seen
+        # Mark related notifications as see
         Notification.objects.filter(ticket=instance,user=user,is_seen=False).update(is_seen=True)
+        print('Notifications altered')
         # for notification in related_notifications:
             # notification.is_seen = True
             # notification.save()
