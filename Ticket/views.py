@@ -398,7 +398,7 @@ class StaffAssignTicket(generics.RetrieveUpdateAPIView):
     def get_queryset(self):
         user = self.request.user
         if user.is_staff:
-            return Ticket.objects.filter(service__in=user.staff.services.all())
+            return Ticket.objects.filter(service__in=user.staff.services.all()).select_related('assigned_to','service')
         else:
             return Ticket.objects.none()
     
@@ -417,7 +417,11 @@ class StaffAssignTicket(generics.RetrieveUpdateAPIView):
                             status=status.HTTP_403_FORBIDDEN)
         if ticket.assigned_to != staff:
             ticket.assigned_to = staff
-        ticket.status = 'Pending Approval'
+        if not ticket.service.is_final_price:
+            ticket.status = 'Pending Approval'
+        else:
+            ticket.status = 'Pending Payment'
+
         
         if staff.is_supervisor:
             workers_data = self.request.data.get('workers', None)
