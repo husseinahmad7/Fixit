@@ -61,16 +61,16 @@ def staff_assign_ticket(sender, instance, **kwargs):
                         message_body=body,
                         data_message=data_msg
                     )
-                elif instance.status == 'Pending Payment':
-                    if instance.client.device_reg_id:
-                        title, body = ('Ticket Assigned','Your have to be pay your ticket now')
-                        data_msg={'ticket_id':instance.id,'type':client_noti.type}
-                        push_service.notify_single_device(
-                            registration_id=instance.client.device_reg_id,
-                            message_title=title,
-                            message_body=body,
-                            data_message=data_msg
-                        )
+            elif instance.status == 'Pending Payment':
+                if instance.client.device_reg_id:
+                    title, body = ('Ticket Assigned','Your have to be pay your ticket now')
+                    data_msg={'ticket_id':instance.id,'type':client_noti.type}
+                    push_service.notify_single_device(
+                        registration_id=instance.client.device_reg_id,
+                        message_title=title,
+                        message_body=body,
+                        data_message=data_msg
+                    )
 
 @receiver(pre_save,sender=Ticket)
 def staff_reject_ticket(sender, instance, **kwargs):
