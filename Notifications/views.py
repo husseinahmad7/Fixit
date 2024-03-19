@@ -7,13 +7,15 @@ from .serializers import NotificationSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
+from Ticket.decorators import query_debugger
+from django.utils.decorators import method_decorator
 
 class NotificationListView(generics.ListAPIView):
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated]
-
+    
+    @method_decorator(query_debugger)
     def get_queryset(self):
         # Filter notifications for the current user
         user = self.request.user
