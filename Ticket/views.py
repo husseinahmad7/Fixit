@@ -423,6 +423,7 @@ class StaffAssignTicket(generics.RetrieveUpdateAPIView):
         if not ticket.service.is_final_price:
             ticket.status = 'Pending Approval'
         else:
+            ticket.paycode = generate_payment_code()
             ticket.status = 'Pending Payment'
 
         
