@@ -12,7 +12,6 @@ from django.utils.decorators import method_decorator
 
 @method_decorator(query_debugger,name='dispatch')
 class NotificationListView(generics.ListAPIView):
-    queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated]
     
@@ -23,11 +22,11 @@ class NotificationListView(generics.ListAPIView):
 
         if filtered == 'true':
             # Retrieve unseen notifications (where 'unseen' is True)
-            unseen_notifications = self.queryset.filter(user=user, is_seen=False)
+            unseen_notifications = Notification.objects.filter(user=user, is_seen=False).select_related('ticket__client')
             return unseen_notifications
         else:
             # Show all notifications
-            return self.queryset.filter(user=user)
+            return Notification.objects.filter(user=user).select_related('ticket__client')
         # return self.queryset.filter(user=self.request.user)
 
 class MarkNotificationAsSeenView(generics.UpdateAPIView):
