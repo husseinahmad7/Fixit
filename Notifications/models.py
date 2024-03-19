@@ -17,7 +17,11 @@ class Notification(models.Model):
             case 1:
                 return ('Ticket available',f'A new ticket is available')
             case 2:
-                return ('Ticket got priced',f'Your Ticket is pending to approve the final price {self.ticket.final_price}')
+                if self.ticket.final_price is not None:
+
+                    return ('Ticket got priced',f'Your Ticket is pending to approve the final price {self.ticket.final_price}')
+                else:
+                    return ('Ticket Assigned','Your have to be pay your ticket now')
             case 3:
                 return ('Ticket rejected',f'The Ticket has been rejected by {self.ticket.client.full_name}')
 
