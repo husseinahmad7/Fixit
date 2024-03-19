@@ -39,9 +39,9 @@ class MarkNotificationAsSeenView(generics.UpdateAPIView):
         instance = self.get_object()
         instance.is_seen = True
         instance.save()
-        self.partial_update(request, *args, **kwargs)
-
-        return Response({'success': 'The Notification has been seen.'},status=status.HTTP_200_OK)
+# Response({'success': 'The Notification has been seen.'},status=status.HTTP_200_OK)
+        return self.partial_update(request, *args, **kwargs)
+        
 
 
 class UnseenNotificationCountView(APIView):
