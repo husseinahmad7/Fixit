@@ -132,7 +132,7 @@ class ClientTicketsList(generics.ListAPIView):
     serializer_class = TicketListSerializer
 
 
-    @method_decorator([cache_page(60*1),query_debugger])
+    @method_decorator(cache_page(60*1))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
     # @method_decorator(query_debugger)
@@ -367,7 +367,7 @@ class StaffAssignedTicketsList(generics.ListAPIView):
         else:
             return Ticket.objects.none()
         
-
+@method_decorator(query_debugger,name='dispatch')
 class StaffTicketDetailsView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = StaffTicketDetailsSerializer
     permission_classes = [IsAdminUser]
