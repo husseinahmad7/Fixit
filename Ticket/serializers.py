@@ -58,7 +58,7 @@ class TicketSerializer(serializers.ModelSerializer):
         representation.update(client_info)
         representation['workers'] = workers_info
         return representation
-@method_decorator(query_debugger,name='to_representation')
+
 class TicketListSerializer(serializers.ModelSerializer):
     """
         fields = ['id', 'service', 'assigned_to', 'status','final_price', 'submission_date','client_rating']

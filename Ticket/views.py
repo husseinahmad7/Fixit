@@ -17,7 +17,7 @@ from django.db.models import Prefetch
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
 
-from .decorators import query_debugger
+# from .decorators import query_debugger
 
 def generate_payment_code(length=8):
     import secrets
@@ -367,7 +367,7 @@ class StaffAssignedTicketsList(generics.ListAPIView):
         else:
             return Ticket.objects.none()
         
-@method_decorator(query_debugger,name='dispatch')
+
 class StaffTicketDetailsView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = StaffTicketDetailsSerializer
     permission_classes = [IsAdminUser]
