@@ -248,7 +248,11 @@ class ClientRateView(generics.UpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         ticket = self.get_object()
-        rating = request.data.get('client_rating')
+        try:
+        # Convert the rating string to an integer
+            rating = int(request.data.get('client_rating'))
+        except ValueError:
+            return Response({'error': 'Invalid rating format. Please provide a numeric value.'}, status=status.HTTP_400_BAD_REQUEST)
         # Validate that the rating is between 1 and 5
         if rating is not None and 1 <= rating <= 5:
             if ticket.client == request.user:
