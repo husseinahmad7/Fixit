@@ -167,16 +167,12 @@ class TicketClientDetail(generics.RetrieveAPIView):
     queryset = Ticket.objects.all()
     serializer_class = TicketClientDetailSerializer
     permission_classes = [OwnerOrAdminPermission]
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        user = request.user
-        # Mark related notifications as seen
-        Notification.objects.filter(ticket=instance,user=user,is_seen=False).update(is_seen=True)
-        # for notification in related_notifications:
-        #     notification.is_seen = True
-        #     notification.save()
+    # def retrieve(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     user = request.user
+    #     # Mark related notifications as seen
 
-        return super().retrieve(request, *args, **kwargs)
+    #     return super().retrieve(request, *args, **kwargs)
 
 class TicketPictureCreateView(generics.CreateAPIView):
     serializer_class = TicketPictureSerializer
@@ -382,17 +378,17 @@ class StaffTicketDetailsView(generics.RetrieveUpdateDestroyAPIView):
         else:
             return Ticket.objects.none()
         
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        user = request.user
-        # Mark related notifications as see
-        Notification.objects.filter(ticket=instance,user=user,is_seen=False).update(is_seen=True)
-        print('Notifications altered')
-        # for notification in related_notifications:
-            # notification.is_seen = True
-            # notification.save()
+    # def retrieve(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     user = request.user
+    #     # Mark related notifications as see
+    #     Notification.objects.filter(ticket=instance,user=user,is_seen=False).update(is_seen=True)
+    #     print('Notifications altered')
+    #     # for notification in related_notifications:
+    #         # notification.is_seen = True
+    #         # notification.save()
 
-        return super().retrieve(request, *args, **kwargs)
+    #     return super().retrieve(request, *args, **kwargs)
 
 class StaffAssignTicket(generics.RetrieveUpdateAPIView):
     serializer_class = StaffTicketStatusSerializer

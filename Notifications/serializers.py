@@ -27,3 +27,10 @@ class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = ['id', 'ticket', 'user', 'type', 'date','title','body', 'is_seen']
+
+
+class NotificationSeenActSerializer(serializers.ModelSerializer):
+        
+    class Meta:
+        model = Notification
+        fields = ['is_seen']

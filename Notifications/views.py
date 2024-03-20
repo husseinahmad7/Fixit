@@ -3,7 +3,7 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from .models import Notification
-from .serializers import NotificationSerializer
+from .serializers import NotificationSerializer,NotificationSeenActSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -31,16 +31,18 @@ class NotificationListView(generics.ListAPIView):
 
 class MarkNotificationAsSeenView(generics.UpdateAPIView):
     queryset = Notification.objects.all()
-    serializer_class = NotificationSerializer
+    serializer_class = NotificationSeenActSerializer
     permission_classes = [IsAuthenticated]
 
     def partial_update(self, request, *args, **kwargs):
         # Mark the notification as seen
+        user = request.user
         instance = self.get_object()
-        instance.is_seen = True
-        instance.save()
-# Response({'success': 'The Notification has been seen.'},status=status.HTTP_200_OK)
-        return super().partial_update(request, *args, **kwargs)
+        # instance.is_seen = True
+        # instance.save()
+        Notification.objects.filter(ticket=instance,user=user,is_seen=False).update(is_seen=True)
+
+        return Response({'success': 'The Notification has been seen.'},status=status.HTTP_200_OK)
         
 
 
