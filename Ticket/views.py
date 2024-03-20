@@ -249,13 +249,17 @@ class ClientRateView(generics.UpdateAPIView):
     def update(self, request, *args, **kwargs):
         ticket = self.get_object()
         rating = request.data.get('client_rating')
-        if ticket.client == request.user:
-            ticket.status = 'Rated'
-            ticket.client_rating = rating
-            ticket.save()
-            return Response({'message': 'Ticket Rated successfully'}, status=status.HTTP_200_OK)
+        # Validate that the rating is between 1 and 5
+        if rating is not None and 1 <= rating <= 5:
+            if ticket.client == request.user:
+                ticket.status = 'Rated'
+                ticket.client_rating = rating
+                ticket.save()
+                return Response({'message': 'Ticket rated successfully'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'Action is not allowed.'}, status=status.HTTP_403_FORBIDDEN)
         else:
-            return Response({'error': 'Action is not allowed.'}, status=status.HTTP_403_FORBIDDEN)
+            return Response({'error': 'Invalid rating. Please provide a value between 1 and 5.'}, status=status.HTTP_400_BAD_REQUEST)
 
 class StaffRejectTicketView(generics.UpdateAPIView):
     serializer_class = TicketStatusSerializer
