@@ -93,8 +93,8 @@ class ServiceWorkersList(generics.ListAPIView):
     
     def get_queryset(self):
         service_id = self.kwargs.get('service_id')
-        service = Service.objects.get(pk=service_id)
-        return Staff.objects.filter(services=service,is_supervisor=False)
+        # service = Service.objects.get(pk=service_id)
+        return Staff.objects.filter(services__pk=service_id,availability=True,is_supervisor=False).select_related('user')
 
 class AddServiceForStaffView(APIView):
     permission_classes = [IsSuperUser]

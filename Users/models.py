@@ -61,6 +61,9 @@ class Staff(models.Model):
         return reverse("staff-retrieve", kwargs={"pk": self.pk})
     def __str__(self):
         return f"{self.user.full_name}"
+    
+    class Meta:
+        ordering = ['department']
 # class UserManager(BaseUserManager):
 #     def create_user(self, username, email, password=None, **extra_fields):
 #         if not email:
