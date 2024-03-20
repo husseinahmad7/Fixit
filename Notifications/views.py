@@ -30,7 +30,7 @@ class NotificationListView(generics.ListAPIView):
         # return self.queryset.filter(user=self.request.user)
 
 class MarkNotificationAsSeenView(generics.UpdateAPIView):
-    queryset = Notification.objects.all().select_related('ticket','is_seen')
+    queryset = Notification.objects.all().select_related('ticket')
     serializer_class = NotificationSeenActSerializer
     permission_classes = [IsAuthenticated]
 
