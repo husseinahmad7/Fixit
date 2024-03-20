@@ -12,7 +12,7 @@ class ServiceAdmin(admin.ModelAdmin):
     ordering = ('title',)
 
 class TicketAdmin(admin.ModelAdmin):
-    list_display = ('client', 'service', 'status', 'assigned_to', 'submission_date')
+    list_display = ('id','client', 'service', 'status', 'assigned_to', 'submission_date')
     list_filter = ('status', 'assigned_to')
     search_fields = ('client__email', 'service__title', 'description')
     ordering = ('-submission_date',)
