@@ -53,7 +53,7 @@ class Ticket(models.Model):
 
     ]
     
-    client = models.ForeignKey('Users.User', on_delete=models.CASCADE,db_index=True)
+    client = models.ForeignKey('Users.User', on_delete=models.CASCADE,db_index=True,limit_choices_to={'is_staff': False})
     description = models.TextField()
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='tickets', null=True, blank=True)
     location = models.JSONField()
