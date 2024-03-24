@@ -7,10 +7,7 @@ from .serializers import NotificationSerializer,NotificationSeenActSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from Ticket.decorators import query_debugger
-from django.utils.decorators import method_decorator
 
-@method_decorator(query_debugger,name='dispatch')
 class NotificationListView(generics.ListAPIView):
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated]
