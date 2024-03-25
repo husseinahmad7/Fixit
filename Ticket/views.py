@@ -210,6 +210,7 @@ class ClientRejectView(generics.UpdateAPIView):
         # Validate and update the ticket status
         if ticket.client == request.user:
             ticket.status = 'Client Rejected'
+            ticket.workers.clear()
             ticket.save()
             return Response({'message': 'Ticket Rejected successfully'}, status=status.HTTP_200_OK)
         else:
