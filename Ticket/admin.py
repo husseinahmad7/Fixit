@@ -35,8 +35,8 @@ class TicketAdmin(admin.ModelAdmin):
         for ticket in queryset:
             if ticket.client:
                 # Customize the email subject and content
-                subject = f"Ticket Update: Ticket #{ticket.id} Status Changed"
-                message = f"Dear {ticket.client.full_name},\n\nYour ticket status has been updated to {ticket.status}."
+                subject = f"Ticket Review: #{ticket.id}"
+                message = f"Dear {ticket.client.full_name},\n\nYou may review Your ticket which has a status {ticket.status}."
                 from_email = "admin@fixit.com"
                 recipient_list = [ticket.client.email]
 
